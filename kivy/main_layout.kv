@@ -1,0 +1,53 @@
+# Imports
+##:import MDRectangleFlatButton kivymd.uix.button.MDRectangleFlatButton
+
+#:import MDScreen kivymd.uix.screen.MDScreen
+#:import MDBottomNavigation kivymd.uix.bottomnavigation.MDBottomNavigation
+#:import MDBottomNavigation kivymd.uix.bottomnavigation.MDBottomNavigationItem
+
+# Import local components
+#:import TtsBox screens.tts.TtsBox
+
+# Include your other KV files
+
+MDScreen:
+    on_enter: app.update_chatbot(self)
+
+    MDBottomNavigation:
+        id: bottom_navigation_bar
+        panel_color: "#edcffa"
+        selected_color_background: "orange"
+        text_color_active: "black"
+
+        MDBottomNavigationItem:
+            id: nav_tts
+            name: 'tts'
+            text: 'Text to Speach'
+            icon: 'speaker-wireless'
+            badge_icon: "numeric-0"
+
+            TtsBox:
+                id: tts_screen
+
+        MDBottomNavigationItem:
+            id: nav_stt
+            name: 'stt'
+            text: 'Speach to Text'
+            icon: 'microphone'
+            badge_icon: "numeric-0"
+
+            MDLabel:
+                text: 'Speach to Text, coming soon...'
+                halign: 'center'
+
+        MDBottomNavigationItem:
+            id: nav_settings
+            name: 'settings'
+            text: 'Settings'
+            icon: 'wrench'
+
+            MDLabel:
+                text: 'Settings...'
+                halign: 'center'
+
+# End

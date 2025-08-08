@@ -1,0 +1,1 @@
+Audio .wav files will be saved in this folder if the kivy user path is not provided.
