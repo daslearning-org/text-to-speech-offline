@@ -18,8 +18,16 @@ You can check the [Releases](https://github.com/daslearning-org/text-to-speech-o
 You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the application on your computer. If you are on `Windows`, download the `dlTTS-vX.X.X.exe` file & double click to run it. If you are on `Linux`, download `dlTTS-vXXX` file and run it (you may need to change the permission to execute). To be added...
 
 ### 🐍 Run with Python
+
+1. Clone the repo
 ```bash
 git clone https://github.com/daslearning-org/text-to-speech-offline.git
+```
+
+2. Download the voice files like [onnx](https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx) & [onnx.json](https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json) from [HuggingFace](https://huggingface.co/rhasspy/piper-voices/tree/main) and place those files in [models](./kivy/models/). You can choose your voices, both `onnx` & `onnx.json` will e required.
+
+3. Run the application
+```bash
 cd text-to-speech-offline/kivy/
 pip install -r requirements.txt # virtual environment is recommended
 python main.py
