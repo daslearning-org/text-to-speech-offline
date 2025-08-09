@@ -13,7 +13,7 @@ package.domain = in.daslearning
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json,java
+source.include_exts = py,png,jpg,kv,atlas,json,java,ttf
 #,onnx
 
 # (list) List of inclusions using pattern matching
@@ -30,7 +30,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.0.1
+version = 0.1.0
 #android.release_keystore = ~/keystores/dlchat.keystore
 
 # (str) Application versioning (method 2)
