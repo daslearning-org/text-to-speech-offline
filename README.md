@@ -1,10 +1,11 @@
-# ⌨️ -> 🔊 Offline Text to Speech Application
+# ⌨️ ➜ 🔊 Offline Text to Speech Application
 Your private offline Text-To-Speech app for Android, Linux, Windows. The application is made with [Kivy](https://kivy.org/) and [KivyMD](https://kivymd.readthedocs.io/en/latest/) on Python.
 
 > Overview: The app uses KivyMD and Kivy mainly for the AI Chatbot UI. It mainly uses [PiperTTS](https://github.com/OHF-Voice/piper1-gpl) on Desktop environments and native [Android-TTS](https://developer.android.com/reference/android/speech/tts/TextToSpeech) on `Android` platform.
 
 ## 📽️ Demo
-Coming soon...
+You can click on the below Image or this [Youtube Link](https://www.youtube.com/watch?v=AhcjJu2YwUE) to see the demo. Please let me know in the comments, how do you feel about this App. <br>
+[![Android-TTS](./docs/images/ttsThumb.png)](https://www.youtube.com/watch?v=AhcjJu2YwUE)
 
 ## 🖧 Our Scematic Architecture
 To be added...

@@ -454,6 +454,7 @@ class DlTtsSttApp(MDApp):
 
     def send_message(self, button_instance, chat_input_widget, chat_history_widget):
         user_message = chat_input_widget.text.strip()
+        #print(user_message)
         if user_message:
             # generate a msg id here
             self.message_counter += 1

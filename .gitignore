@@ -12,6 +12,7 @@ __pycache__/
 # kivy
 .buildozer/
 *.apk
+logs/
 
 # C extensions
 *.so

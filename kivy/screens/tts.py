@@ -14,10 +14,12 @@ Builder.load_string('''
 <UsrMsg>:
     size_hint_y: None
     size_hint_x: 0.7
-    height: self.texture_size[1] + dp(10)
-    padding: 12, 10
-    #theme_text_color: "Custom"
-    #text_color: (0, 0, 0, 1)
+    height: self.texture_size[1] + dp(20)
+    padding: 10, 10
+    font_size: sp(14)
+    font_name: 'data/fonts/NotoSans-VariableFont.ttf'
+    text_size: self.width - 20, None
+    color: (0, 0, 0, 1)
     allow_selection: True
     allow_copy: True
     halign: "left"
@@ -36,7 +38,7 @@ Builder.load_string('''
     size_hint_x: 0.9
     pos_hint: {"x": 0}
     height: self.minimum_height + dp(10)
-    padding: 2, 2
+    padding: 4, 2
     spacing: dp(2)
     canvas.before:
         Color:
@@ -45,6 +47,15 @@ Builder.load_string('''
             size: self.width, self.height
             pos: self.pos
             radius: [20, 20, 20, 0]
+
+<MultiLingualTextField>:
+    hint_text: "Type your text..."
+    mode: "rectangle"
+    font_name: 'data/fonts/NotoSans-VariableFont.ttf'
+    multiline: True
+    max_height: "200dp"
+    size_hint_x: 0.8
+    font_size: sp(18)
 
 <TtsBox@MDBoxLayout>: # main box
     orientation: 'vertical'
@@ -89,14 +100,14 @@ Builder.load_string('''
         adaptive_height: True
         id: input_box
 
-        MDTextField:
+        MultiLingualTextField:
             id: chat_input
-            hint_text: "Type your text..."
-            mode: "rectangle"
-            multiline: True
-            max_height: "200dp"
-            size_hint_x: 0.8
-            font_size: sp(18)
+            #hint_text: "Type your text..."
+            #mode: "rectangle"
+            #multiline: True
+            #max_height: "200dp"
+            #size_hint_x: 0.8
+            #font_size: sp(18)
         MDFillRoundFlatButton:
             id: send_msg_button
             text: "Send"
@@ -109,10 +120,13 @@ Builder.load_string('''
 class TtsResp(MDBoxLayout):
     id = StringProperty("")
 
+class MultiLingualTextField(MDTextField):
+    pass
+
 class UsrMsg(MDLabel):
     id = StringProperty("")
     text = StringProperty("")
-    font_style = "Subtitle1" #"Subtitle1"
+    #font_style = "Subtitle1" #"Subtitle1"
 
 class TtsBox(MDBoxLayout):
     def __init__(self, **kwargs):
