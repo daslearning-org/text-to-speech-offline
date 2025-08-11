@@ -11,26 +11,6 @@ from kivy.metrics import dp, sp
 
 Builder.load_string('''
 #:import parse_color kivy.parser.parse_color
-#<UsrMsg>:
-#    size_hint_y: None
-#    size_hint_x: 0.7
-#    height: self.texture_size[1] + dp(20)
-#    padding: 10, 10
-#    font_size: sp(14)
-#    font_name: 'data/fonts/NotoSans-Merge-BM.ttf'
-#    text_size: self.width - 20, None
-#    color: (0, 0, 0, 1)
-#    allow_selection: True
-#    allow_copy: True
-#    halign: "left"
-#    pos_hint: {'right': 1}
-#    canvas.before:
-#        Color:
-#            rgb: parse_color('#fad2ed')
-#        RoundedRectangle:
-#            size: self.width, self.height
-#            pos: self.pos
-#            radius: [20, 20, 0, 20] # [top_left, top_right, bottom_right, bottom_left]
 
 <UsrMsg>:
     mode: "fill"
@@ -39,7 +19,7 @@ Builder.load_string('''
     multiline: True
     max_height: "200dp"
     size_hint_x: 0.7
-    font_size: sp(18)
+    font_size: sp(14)
     pos_hint: {'right': 1}
     text_color_normal: (0, 0, 0, 1)
     text_color_focus: (0, 0, 0, 1)
@@ -117,12 +97,7 @@ Builder.load_string('''
 
         MultiLingualTextField:
             id: chat_input
-            #hint_text: "Type your text..."
-            #mode: "rectangle"
-            #multiline: True
-            #max_height: "200dp"
-            #size_hint_x: 0.8
-            #font_size: sp(18)
+
         MDFillRoundFlatButton:
             id: send_msg_button
             text: "Send"
