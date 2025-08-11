@@ -30,7 +30,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.0
+version = 0.1.2
 #android.release_keystore = ~/keystores/dlchat.keystore
 
 # (str) Application versioning (method 2)

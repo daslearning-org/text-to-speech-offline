@@ -9,6 +9,8 @@ __pycache__/
 *.wav
 *.whl
 *build*.txt
+NotoSans-Merge-BM.ttf
+NotoSansBengali-Regular.ttf
 # kivy
 .buildozer/
 *.apk
