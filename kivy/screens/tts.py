@@ -11,26 +11,41 @@ from kivy.metrics import dp, sp
 
 Builder.load_string('''
 #:import parse_color kivy.parser.parse_color
+#<UsrMsg>:
+#    size_hint_y: None
+#    size_hint_x: 0.7
+#    height: self.texture_size[1] + dp(20)
+#    padding: 10, 10
+#    font_size: sp(14)
+#    font_name: 'data/fonts/NotoSans-Merge-BM.ttf'
+#    text_size: self.width - 20, None
+#    color: (0, 0, 0, 1)
+#    allow_selection: True
+#    allow_copy: True
+#    halign: "left"
+#    pos_hint: {'right': 1}
+#    canvas.before:
+#        Color:
+#            rgb: parse_color('#fad2ed')
+#        RoundedRectangle:
+#            size: self.width, self.height
+#            pos: self.pos
+#            radius: [20, 20, 0, 20] # [top_left, top_right, bottom_right, bottom_left]
+
 <UsrMsg>:
-    size_hint_y: None
+    mode: "fill"
+    readonly: True
+    font_name: 'data/fonts/NotoSans-Merged.ttf'
+    multiline: True
+    max_height: "200dp"
     size_hint_x: 0.7
-    height: self.texture_size[1] + dp(20)
-    padding: 10, 10
-    font_size: sp(14)
-    font_name: 'data/fonts/NotoSans-VariableFont.ttf'
-    text_size: self.width - 20, None
-    color: (0, 0, 0, 1)
-    allow_selection: True
-    allow_copy: True
-    halign: "left"
+    font_size: sp(18)
     pos_hint: {'right': 1}
-    canvas.before:
-        Color:
-            rgb: parse_color('#fad2ed')
-        RoundedRectangle:
-            size: self.width, self.height
-            pos: self.pos
-            radius: [20, 20, 0, 20] # [top_left, top_right, bottom_right, bottom_left]
+    text_color_normal: (0, 0, 0, 1)
+    text_color_focus: (0, 0, 0, 1)
+    fill_color_normal: '#fad2ed'
+    fill_color_focus: '#fad2ed'
+    radius: [20, 20, 0, 20]
 
 <TtsResp>
     orientation: 'horizontal'
@@ -51,7 +66,7 @@ Builder.load_string('''
 <MultiLingualTextField>:
     hint_text: "Type your text..."
     mode: "rectangle"
-    font_name: 'data/fonts/NotoSans-VariableFont.ttf'
+    font_name: 'data/fonts/NotoSans-Merged.ttf'
     multiline: True
     max_height: "200dp"
     size_hint_x: 0.8
@@ -123,10 +138,10 @@ class TtsResp(MDBoxLayout):
 class MultiLingualTextField(MDTextField):
     pass
 
-class UsrMsg(MDLabel):
+class UsrMsg(MDTextField): # originally MDLabel
     id = StringProperty("")
     text = StringProperty("")
-    #font_style = "Subtitle1" #"Subtitle1"
+    #font_style = "Subtitle1"
 
 class TtsBox(MDBoxLayout):
     def __init__(self, **kwargs):

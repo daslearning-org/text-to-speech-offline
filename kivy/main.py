@@ -436,7 +436,9 @@ class DlTtsSttApp(MDApp):
         tts_resp = TtsResp(id=id_to_set)
         tts_resp.add_widget(MDLabel(
             text = f"{id_to_set}.wav",
-            font_style = "Caption" # change size for android
+            font_style = "Caption", # change size for android
+            allow_selection = True,
+            allow_copy = True
         ))
         tts_resp.add_widget(MDSpinner(
             size_hint = [None, None],
