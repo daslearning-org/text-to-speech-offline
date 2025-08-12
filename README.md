@@ -13,7 +13,7 @@ To be added...
 ## 🧑‍💻 Quickstart Guide
 
 ### 📱 Download & Run the Android App
-You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the android app on your phone.
+You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone.
 
 ### 🐍 Run with Python
 
