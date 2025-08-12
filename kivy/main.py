@@ -14,12 +14,12 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.spinner import MDSpinner
+from kivymd.uix.filemanager import MDFileManager
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
 from kivy.utils import platform
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
-from plyer import filechooser
 
 # Other public modules
 
@@ -220,6 +220,12 @@ class DlTtsSttApp(MDApp):
     current_tts_box = ObjectProperty(None)
     previous_tts_box = ObjectProperty(None)
     tts_queue = ObjectProperty(None)
+    tts_save_filename = StringProperty("")
+    tts_save_content = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Window.bind(on_keyboard=self.events)
 
     def build(self):
         self.theme_cls.primary_palette = "Blue"
@@ -252,10 +258,19 @@ class DlTtsSttApp(MDApp):
         os.makedirs(self.tts_audio_dir, exist_ok=True)
         save_path = self.tts_audio_dir
         print(f"Generated audio will be saved in: {self.tts_audio_dir}")
+        # tts file saver using filemanager
+        self.manager_open = False
+        self.tts_file_saver = MDFileManager(
+            exit_manager=self.tts_exit_manager,
+            select_path=self.select_tts_path,
+            selector="folder",  # Restrict to selecting directories only
+        )
+        # audio threads
         self.audio_thread.start()
         self.tts_queue = queue.Queue()
         self.kv_play_thread = threading.Thread(target=self.kv_player_thread, daemon=True)
         self.kv_play_thread.start()
+        # voice models menu
         model_menu = self.root.ids.tts_screen.ids.model_menu
         self.piper = PiperTts(save_dir=self.tts_audio_dir)
         tts_models = self.piper.models_list()
@@ -349,6 +364,13 @@ class DlTtsSttApp(MDApp):
         else:
             self.show_toast_msg(f"Not playing: {parent_id}.wav!!", True)
 
+    def events(self, instance, keyboard, keycode, text, modifiers):
+        """Handle mobile device button presses (e.g., back button)."""
+        if keyboard in (1001, 27):  # Back button
+            if self.manager_open:
+                self.file_manager.back()
+        return True
+
     def start_download(self, instance):
         parent_id = instance.parent.id
         file_to_downlaod = f"{parent_id}.wav"
@@ -371,41 +393,38 @@ class DlTtsSttApp(MDApp):
             print(f"Error reading existing file: {e}")
             self.show_toast_msg(f"Error reading original file: {e}", is_error=True)
             return
-        self.default_save_filename = file_to_downlaod
-        filechooser.save_file(
-            title=f"Save {self.default_save_filename} As",
-            path=self.tts_audio_dir,
-            filters=[("Audio files", "*.wav"), ("All files", "*.*")],
-            # We don't pass 'filename' here. We'll handle it in the callback.
-            on_selection=lambda selection: self.save_file_callback(selection, file_content)
-        )
-
-    def save_file_callback(self, selection, file_content):
-        if selection:
-            #print(selection)
-            # `selection` will contain the chosen directory path, potentially without the filename
-            chosen_path_or_dir = selection[0]
-
-            if os.path.isdir(chosen_path_or_dir):
-                chosen_path = os.path.join(chosen_path_or_dir, self.default_save_filename)
-            else:
-                # If a full path with a filename was already chosen (e.g., user typed one)
-                chosen_path = chosen_path_or_dir
-                # Ensure the chosen path has an extension if it's missing and we expect one
-                if '.' not in os.path.basename(chosen_path) and '.' in self.default_save_filename:
-                    chosen_path += os.path.splitext(self.default_save_filename)[1] # Add the original extension
-
+        self.tts_save_filename = file_to_downlaod
+        self.tts_save_content = file_content
+        # open the storage dialog
+        if platform == "android":
             try:
-                with open(chosen_path, 'wb') as f:
-                    f.write(file_content)
-                print(f"File successfully saved to: {chosen_path}")
-                self.show_toast_msg(f"File saved to: {chosen_path}")
-            except Exception as e:
-                print(f"Error saving file: {e}")
-                self.show_toast_msg(f"Error saving file: {e}", is_error=True)
+                Environment = autoclass("android.os.Environment")
+                external_storage = Environment.getExternalStorageDirectory().getAbsolutePath()
+                self.tts_file_saver.show(external_storage)  # Open /sdcard on Android
+            except Exception:
+                self.tts_file_saver.show_disks()  # Fallback to showing available disks
         else:
-            print("File save cancelled.")
-            self.show_toast_msg("File save cancelled.")
+            self.tts_file_saver.show(os.path.expanduser("~"))  # Use home directory on non-Android platforms
+        self.manager_open = True
+
+    def select_tts_path(self, path: str):
+        """
+        Called when a directory is selected. Save the TTS wav file.
+        """
+        chosen_path = os.path.join(path, self.tts_save_filename)
+        try:
+            with open(chosen_path, 'wb') as f:
+                f.write(self.tts_save_content)
+            print(f"File successfully saved to: {chosen_path}")
+            self.show_toast_msg(f"File saved to: {chosen_path}")
+        except Exception as e:
+            print(f"Error saving file: {e}")
+            self.show_toast_msg(f"Error saving file: {e}", is_error=True)
+
+    def tts_exit_manager(self, *args):
+        """Called when the user reaches the root of the directory tree."""
+        self.manager_open = False
+        self.tts_file_saver.close()
 
     def add_tts_msg(self, chat_history_widget, id_to_set):
         play_pause_btn = MDIconButton(
