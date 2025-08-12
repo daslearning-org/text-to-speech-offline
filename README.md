@@ -13,7 +13,7 @@ To be added...
 ## 🧑‍💻 Quickstart Guide
 
 ### 📱 Download & Run the Android App
-You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone.
+You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone. If you use the `Download` button, you can save the selected audio (.wav) in `Downloads` or `Music` folder only due android file access restrictions.
 
 ### 🐍 Run with Python
 

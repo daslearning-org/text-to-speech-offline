@@ -221,6 +221,7 @@ class DlTtsSttApp(MDApp):
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
     tts_save_content = ObjectProperty(None)
+    external_storage = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -364,11 +365,16 @@ class DlTtsSttApp(MDApp):
             self.show_toast_msg(f"Not playing: {parent_id}.wav!!", True)
 
     def events(self, instance, keyboard, keycode, text, modifiers):
-        """Handle mobile device button presses (e.g., back button)."""
-        if keyboard in (1001, 27):  # Back button
+        """Handle mobile device button presses (e.g., Android back button)."""
+        if keyboard in (1001, 27):  # Android back button or equivalent
             if self.manager_open:
-                self.file_manager.back()
-        return True
+                # Check if we are at the root of the directory tree
+                if self.tts_file_saver.current_path == self.external_storage:
+                    self.show_toast_msg(message="You have reached the root!", is_error=True)
+                else:
+                    self.tts_file_saver.back()  # Navigate back within file manager
+                return True  # Consume the event to prevent app exit
+        return False
 
     def start_download(self, instance):
         parent_id = instance.parent.id
@@ -398,8 +404,8 @@ class DlTtsSttApp(MDApp):
         if platform == "android":
             try:
                 Environment = autoclass("android.os.Environment")
-                external_storage = Environment.getExternalStorageDirectory().getAbsolutePath()
-                self.tts_file_saver.show(external_storage)  # Open /sdcard on Android
+                self.external_storage = Environment.getExternalStorageDirectory().getAbsolutePath()
+                self.tts_file_saver.show(self.external_storage)  # Open /sdcard on Android
             except Exception:
                 self.tts_file_saver.show_disks()  # Fallback to showing available disks
         else:

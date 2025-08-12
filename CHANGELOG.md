@@ -1,5 +1,9 @@
 ## Changes on the app
 
+### v0.1.7
+- Back button to parent folder (from current folder) till you reach `sdcard` root.
+- Fixes the back button not exiting from app main screen.
+
 ### v0.1.6
 - Added in-app file-explorer to downlaod the audio file(s). Due to android permission restrictions, the file can only be saved into `Music` folder in phone storage. Just select the `Music` folder & click on the `Check` button at the bottom-right.
 
