@@ -1,5 +1,8 @@
 ## Changes on the app
 
+### v0.1.4
+- Adding keyboard suggestion feature for text input
+
 ### v0.1.2
 - Changing the app logo
 

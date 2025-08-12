@@ -30,7 +30,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.2
+version = 0.1.4
 #android.release_keystore = ~/keystores/dlchat.keystore
 
 # (str) Application versioning (method 2)
@@ -51,7 +51,7 @@ requirements = python3, kivy==2.3.1, kivymd==1.2.0, pyjnius, android, docutils, 
 #presplash.filename = %(source.dir)s/data/images/favicon.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/data/images/favicon.png
+icon.filename = %(source.dir)s/data/images/favicont512.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
