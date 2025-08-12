@@ -1,5 +1,8 @@
 ## Changes on the app
 
+### v0.1.6
+- Added in-app file-explorer to downlaod the audio file(s). Due to android permission restrictions, the file can only be saved into `Music` folder in phone storage. Just select the `Music` folder & click on the `Check` button at the bottom-right.
+
 ### v0.1.4
 - Adding keyboard suggestion feature for text input
 

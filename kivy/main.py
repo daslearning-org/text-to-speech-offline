@@ -30,7 +30,6 @@ Window.softinput_mode = "below_target"
 from screens.tts import TtsBox, UsrMsg, TtsResp
 if platform == "android":
     from jnius import autoclass, PythonJavaClass, java_method
-    from plyer.platforms.android import activity
     MediaPlayer = autoclass('android.media.MediaPlayer')
     from piperAndroid import PiperTts
 else:

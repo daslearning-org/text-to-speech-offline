@@ -40,7 +40,7 @@ version = 0.1.6
 # (list) Application requirements
 # /<your-codebase>/.buildozer/android/platform/build-arm64-v8a/build/python-installs/ttssts/arm64-v8a
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, kivy==2.3.1, kivymd==1.2.0, pyjnius, android, docutils, filetype, pillow, Pygments, requests
+requirements = python3, kivy==2.3.1, kivymd==1.2.0, pyjnius, android, docutils, filetype, pillow, plyer==2.1.0, Pygments, requests
 #scikit-build-core, patchelf==0.17.0, cmake
 
 # (str) Custom source folders for requirements
