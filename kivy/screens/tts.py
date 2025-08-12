@@ -49,6 +49,8 @@ Builder.load_string('''
     font_name: 'data/fonts/NotoSans-Merged.ttf'
     multiline: True
     max_height: "200dp"
+    input_type: 'text'
+    keyboard_suggestions: True
     size_hint_x: 0.8
     font_size: sp(18)
 
