@@ -221,7 +221,6 @@ class DlTtsSttApp(MDApp):
     previous_tts_box = ObjectProperty(None)
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
-    #tts_save_content = ObjectProperty(None)
     external_storage = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -387,22 +386,7 @@ class DlTtsSttApp(MDApp):
             self.show_toast_msg(f"The file {file_to_downlaod} is not found!", is_error=True)
             return
 
-        #file_content = ""
-        #try:
-        #    with open(wav_file_path, 'rb') as f:
-        #        file_content = f.read()
-        #    print(f"Read content from: {wav_file_path}")
-        #except FileNotFoundError:
-        #    print(f"Error: The file '{file_to_downlaod}' was not found at '{wav_file_path}'")
-        #    self.show_toast_msg(f"Error: Original file '{file_to_downlaod}' not found.", is_error=True)
-        #    return
-        #except Exception as e:
-        #    print(f"Error reading existing file: {e}")
-        #    self.show_toast_msg(f"Error reading original file: {e}", is_error=True)
-        #    return
         self.tts_save_filename = file_to_downlaod
-        #self.tts_save_content = file_content
-        # open the storage dialog
         if platform == "android":
             try:
                 Environment = autoclass("android.os.Environment")
@@ -422,8 +406,6 @@ class DlTtsSttApp(MDApp):
         chosen_path = os.path.join(path, self.tts_save_filename) # destination path
         wav_file_path = os.path.join(save_path, self.tts_save_filename) # source path
         try:
-            #with open(chosen_path, 'wb') as f:
-            #    f.write(self.tts_save_content)
             shutil.copyfile(wav_file_path, chosen_path)
             print(f"File successfully saved to: {chosen_path}")
             self.show_toast_msg(f"File saved to: {chosen_path}")
