@@ -1,7 +1,7 @@
 ## Changes on the app
 
 ### v0.1.7
-- Back button to parent folder (from current folder) till you reach `sdcard` root.
+- Back button to parent folder (from current folder) till you reach `sdcard` in android or `root` in other OS.
 - Fixes the back button not exiting from app main screen.
 
 ### v0.1.6

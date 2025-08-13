@@ -6,6 +6,7 @@ import random
 import string
 import threading
 import queue
+import shutil
 
 # kivy world
 from kivymd.app import MDApp
@@ -220,7 +221,7 @@ class DlTtsSttApp(MDApp):
     previous_tts_box = ObjectProperty(None)
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
-    tts_save_content = ObjectProperty(None)
+    #tts_save_content = ObjectProperty(None)
     external_storage = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -370,7 +371,8 @@ class DlTtsSttApp(MDApp):
             if self.manager_open:
                 # Check if we are at the root of the directory tree
                 if self.tts_file_saver.current_path == self.external_storage:
-                    self.show_toast_msg(message="You have reached the root!", is_error=True)
+                    self.show_toast_msg(f"Closing file manager from main storage")
+                    self.tts_exit_manager()
                 else:
                     self.tts_file_saver.back()  # Navigate back within file manager
                 return True  # Consume the event to prevent app exit
@@ -385,21 +387,21 @@ class DlTtsSttApp(MDApp):
             self.show_toast_msg(f"The file {file_to_downlaod} is not found!", is_error=True)
             return
 
-        file_content = ""
-        try:
-            with open(wav_file_path, 'rb') as f:
-                file_content = f.read()
-            print(f"Read content from: {wav_file_path}")
-        except FileNotFoundError:
-            print(f"Error: The file '{file_to_downlaod}' was not found at '{wav_file_path}'")
-            self.show_toast_msg(f"Error: Original file '{file_to_downlaod}' not found.", is_error=True)
-            return
-        except Exception as e:
-            print(f"Error reading existing file: {e}")
-            self.show_toast_msg(f"Error reading original file: {e}", is_error=True)
-            return
+        #file_content = ""
+        #try:
+        #    with open(wav_file_path, 'rb') as f:
+        #        file_content = f.read()
+        #    print(f"Read content from: {wav_file_path}")
+        #except FileNotFoundError:
+        #    print(f"Error: The file '{file_to_downlaod}' was not found at '{wav_file_path}'")
+        #    self.show_toast_msg(f"Error: Original file '{file_to_downlaod}' not found.", is_error=True)
+        #    return
+        #except Exception as e:
+        #    print(f"Error reading existing file: {e}")
+        #    self.show_toast_msg(f"Error reading original file: {e}", is_error=True)
+        #    return
         self.tts_save_filename = file_to_downlaod
-        self.tts_save_content = file_content
+        #self.tts_save_content = file_content
         # open the storage dialog
         if platform == "android":
             try:
@@ -409,6 +411,7 @@ class DlTtsSttApp(MDApp):
             except Exception:
                 self.tts_file_saver.show_disks()  # Fallback to showing available disks
         else:
+            self.external_storage = os.path.abspath("/")
             self.tts_file_saver.show(os.path.expanduser("~"))  # Use home directory on non-Android platforms
         self.manager_open = True
 
@@ -416,12 +419,15 @@ class DlTtsSttApp(MDApp):
         """
         Called when a directory is selected. Save the TTS wav file.
         """
-        chosen_path = os.path.join(path, self.tts_save_filename)
+        chosen_path = os.path.join(path, self.tts_save_filename) # destination path
+        wav_file_path = os.path.join(save_path, self.tts_save_filename) # source path
         try:
-            with open(chosen_path, 'wb') as f:
-                f.write(self.tts_save_content)
+            #with open(chosen_path, 'wb') as f:
+            #    f.write(self.tts_save_content)
+            shutil.copyfile(wav_file_path, chosen_path)
             print(f"File successfully saved to: {chosen_path}")
             self.show_toast_msg(f"File saved to: {chosen_path}")
+            self.tts_exit_manager()
         except Exception as e:
             print(f"Error saving file: {e}")
             self.show_toast_msg(f"Error saving file: {e}", is_error=True)
