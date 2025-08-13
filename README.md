@@ -14,7 +14,10 @@ To be added...
 
 ### 📱 Download & Run the Android App
 You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone.
+
 > If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions.
+
+> If you have a `Samsung` phone (or some other brand's phone) which doesn't have `Google` as default text-to-speech engine. You may change it to google to get more voices. Go to `Settings` > `Accessibility` > `Talkback` > `Settings` > `text-to-speech settings`> `Preferred engine` > then choose `Google` as default engine. If you do not find this path directly search `text-to-speech settings` in `Settings`.
 
 ### 🐍 Run with Python
 
