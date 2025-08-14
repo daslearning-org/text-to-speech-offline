@@ -391,7 +391,9 @@ class DlTtsSttApp(MDApp):
             try:
                 Environment = autoclass("android.os.Environment")
                 self.external_storage = Environment.getExternalStorageDirectory().getAbsolutePath()
-                self.tts_file_saver.show(self.external_storage)  # Open /sdcard on Android
+                tts_save_path = os.path.join(self.external_storage, "Music", "TTS")
+                os.makedirs(tts_save_path, exist_ok=True)
+                self.tts_file_saver.show(tts_save_path)  # Open /sdcard on Android
             except Exception:
                 self.tts_file_saver.show_disks()  # Fallback to showing available disks
         else:

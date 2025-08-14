@@ -1,5 +1,8 @@
 ## Changes on the app
 
+### v0.1.8
+- Creating & Opening `TTS` folder under `Music` folder as the default Download location to avoid any unwanted permission issues. 
+
 ### v0.1.7
 - Back button to parent folder (from current folder) till you reach `sdcard` in android or `root` in other OS.
 - Fixes the back button not exiting from app main screen.
