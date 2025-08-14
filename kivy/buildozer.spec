@@ -31,6 +31,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 
 # (str) Application versioning (method 1)
 version = 0.1.9
+
 #android.sign = True
 #android.keystore = /home/somnath/myContents/softwares/android/apk/dl-tts.jks
 #android.key.alias = dl_tts_alias

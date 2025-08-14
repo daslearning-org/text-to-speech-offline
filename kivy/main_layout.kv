@@ -7,6 +7,7 @@
 
 # Import local components
 #:import TtsBox screens.tts.TtsBox
+#:import SettingsBox screens.setting.SettingsBox
 
 # Include your other KV files
 
@@ -46,8 +47,7 @@ MDScreen:
             text: 'Settings'
             icon: 'wrench'
 
-            MDLabel:
-                text: 'Settings...'
-                halign: 'center'
+            SettingsBox:
+                id: settings_scroll
 
 # End

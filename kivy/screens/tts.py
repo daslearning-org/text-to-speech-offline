@@ -27,7 +27,7 @@ Builder.load_string('''
     fill_color_focus: '#fad2ed'
     radius: [20, 20, 0, 20]
 
-<TtsResp>
+<TtsResp>:
     orientation: 'horizontal'
     size_hint_y: None
     size_hint_x: 0.9

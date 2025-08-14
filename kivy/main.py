@@ -16,6 +16,8 @@ from kivymd.uix.button import MDIconButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.spinner import MDSpinner
 from kivymd.uix.filemanager import MDFileManager
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
@@ -222,6 +224,7 @@ class DlTtsSttApp(MDApp):
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
     external_storage = ObjectProperty(None)
+    dialog = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -481,6 +484,39 @@ class DlTtsSttApp(MDApp):
             self.add_tts_msg(chat_history_widget, msg_id)
             self.show_toast_msg(tts_status)
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+
+    def show_delete_alert(self):
+        self.dialog = MDDialog(
+            title="Delete all generated Audio files?",
+            text="Are you really sure? This action cannot be undone!",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=self.close_dialog
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    theme_text_color="Custom",
+                    text_color="red",
+                    on_release=self.discard_action  # Bind the DISCARD button to a custom function
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def close_dialog(self, instance):
+        # Function to close the dialog
+        print("Action cancelled")
+        if self.dialog:
+            self.dialog.dismiss()
+
+    def discard_action(self, instance):
+        # Custom function called when DISCARD is clicked
+        print("User chose to delete the files!")
+        if self.dialog:
+            self.dialog.dismiss()
 
 if __name__ == '__main__':
     DlTtsSttApp().run()
