@@ -30,7 +30,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.9
+version = 0.2.0
 
 #android.sign = True
 #android.keystore = /home/somnath/myContents/softwares/android/apk/dl-tts.jks

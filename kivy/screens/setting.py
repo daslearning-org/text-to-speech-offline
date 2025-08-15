@@ -11,23 +11,21 @@ Builder.load_string('''
 
 <SettingsBox@MDScrollView>: # main box
     orientation: 'vertical'
-    padding: dp(4)
     spacing: dp(10)
 
     MDBoxLayout: # Settings
         id: setting_box
         orientation: 'vertical'
-        #adaptive_height: True
+        adaptive_height: True
         size_hint_y: None
         height: self.minimum_height
-        padding: 10, 10
-        spacing: dp(4)
+        spacing: dp(10)
         padding: dp(10)
 
         MDLabel:
             text: "The app stores generated audio files in a default location. You can delete them using below button."
             size_hint_y: None
-            height: self.texture_size[1] + dp(10)
+            height: self.texture_size[1] #+ dp(10)
 
         MDFillRoundFlatButton:
             id: delete_tts_wavs
@@ -35,9 +33,32 @@ Builder.load_string('''
             font_size: sp(18)
             md_bg_color: "orange"
             theme_text_color: "Custom"
-            text_color: "white"
+            text_color: "black"
             on_release: app.show_delete_alert()
 
+        MDLabel:
+            halign: 'left'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+            markup: True
+            text: "How to use the app > [u][color=0000ff][ref=website]Youtube Demo[/ref][/color][/u]"
+            on_ref_press: app.open_link(self, "https://youtu.be/AhcjJu2YwUE")
+
+        MDLabel:
+            halign: 'left'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+            markup: True
+            text: "Full Documentation > [u][color=0000ff][ref=website]Click Here[/ref][/color][/u]"
+            on_ref_press: app.open_link(self, "https://blog.daslearning.in/llm_ai/genai/text-to-speech-app.html")
+
+        MDLabel:
+            halign: 'left'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+            markup: True
+            text: "Your app version is: [i]0.2.0[/i] > [u][color=0000ff][ref=website]Check & Download the Latest Release[/ref][/color][/u]"
+            on_ref_press: app.open_link(self, "https://github.com/daslearning-org/text-to-speech-offline/releases")
 
 ''')
 

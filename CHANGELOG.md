@@ -1,5 +1,8 @@
 ## Changes on the app
 
+### v0.2.0
+- Added a Cleanup option to delete all generated audio files and also added relevant links into `Settings`
+
 ### v0.1.8
 - Creating & Opening `TTS` folder under `Music` folder as the default Download location to avoid any unwanted permission issues. 
 

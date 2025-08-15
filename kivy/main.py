@@ -486,9 +486,13 @@ class DlTtsSttApp(MDApp):
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
 
     def show_delete_alert(self):
+        wav_count = 0
+        for filename in os.listdir(self.tts_audio_dir):
+            if filename.endswith(".wav"):
+                wav_count += 1
         self.dialog = MDDialog(
             title="Delete all generated Audio files?",
-            text="Are you really sure? This action cannot be undone!",
+            text=f"There are total: {wav_count} audio files. This action cannot be undone!",
             buttons=[
                 MDFlatButton(
                     text="CANCEL",
@@ -500,7 +504,7 @@ class DlTtsSttApp(MDApp):
                     text="DELETE",
                     theme_text_color="Custom",
                     text_color="red",
-                    on_release=self.discard_action  # Bind the DISCARD button to a custom function
+                    on_release=self.delete_tts_action
                 ),
             ],
         )
@@ -512,11 +516,23 @@ class DlTtsSttApp(MDApp):
         if self.dialog:
             self.dialog.dismiss()
 
-    def discard_action(self, instance):
+    def delete_tts_action(self, instance):
         # Custom function called when DISCARD is clicked
-        print("User chose to delete the files!")
+        for filename in os.listdir(self.tts_audio_dir):
+            if filename.endswith(".wav"):
+                file_path = os.path.join(self.tts_audio_dir, filename)
+                try:
+                    os.unlink(file_path)
+                    print(f"Deleted {file_path}")
+                except Exception as e:
+                    print(f"Could not delete the audion files, error: {e}")
+        self.show_toast_msg("Executed the audio cleanup!")
         if self.dialog:
             self.dialog.dismiss()
+
+    def open_link(self, instance, url):
+        import webbrowser
+        webbrowser.open(url)
 
 if __name__ == '__main__':
     DlTtsSttApp().run()
