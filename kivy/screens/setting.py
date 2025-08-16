@@ -7,6 +7,9 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty, NumericProperty
 from kivy.metrics import dp, sp
 
+# local imports
+from .divider import MyMDDivider
+
 Builder.load_string('''
 
 <SettingsBox@MDScrollView>: # main box
@@ -51,6 +54,11 @@ Builder.load_string('''
             markup: True
             text: "Full Documentation > [u][color=0000ff][ref=website]Click Here[/ref][/color][/u]"
             on_ref_press: app.open_link(self, "https://blog.daslearning.in/llm_ai/genai/text-to-speech-app.html")
+
+        MyMDDivider:
+            size_hint_x: .8
+            color: (0, 0, 0, 1)
+            pos_hint: {'left': .2}
 
         MDLabel:
             halign: 'left'
