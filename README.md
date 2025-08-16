@@ -15,7 +15,7 @@ To be added...
 ### 📱 Download & Run the Android App
 You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone.
 
-> If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions.
+> If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions. It defaults to `TTS` folder in `Music`.
 
 > If you have a `Samsung` phone (or some other brand's phone) which doesn't have `Google` as default text-to-speech engine. You may change it to google to get more voices. Go to `Settings` > `Accessibility` > `Talkback` > `Settings` > `text-to-speech settings`> `Preferred engine` > then choose `Google` as default engine. If you do not find this path, directly search `text-to-speech settings` in `Settings`.
 
@@ -62,6 +62,21 @@ pip install -r req_android.txt
 
 # build the android apk
 buildozer android debug # this may take a good amount of time for the first time & will generate the apk in the bin directory
+
+## build AAB for playstore
+# generate a key
+export APP_ANDROID_KEYSTORE_PASSWORD="yourpassword"
+export APP_ANDROID_KEY_PASSWORD="yourpassword"
+keytool -genkey -v -keystore your_key.jks -alias your_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass $APP_ANDROID_KEYSTORE_PASSWORD -keypass $APP_ANDROID_KEYSTORE_PASSWORD -dname "CN=SomnathDas, OU=IT, O=DasLearning, L=Kolkata, ST=WB, C=IN" # this is one time activity for the app
+
+# set the below in buildozer.spec
+android.sign = True
+android.keystore = /path/to/your_key.jks
+android.key.alias = your_alias
+android.release_artifact = aab
+
+# then build the aab
+buildozer -v android release
 ```
 
 ### 🖳 Build Computer Application (Windows / Linux / MacOS)

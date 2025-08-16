@@ -16,6 +16,8 @@ from kivymd.uix.button import MDIconButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.spinner import MDSpinner
 from kivymd.uix.filemanager import MDFileManager
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
@@ -222,6 +224,7 @@ class DlTtsSttApp(MDApp):
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
     external_storage = ObjectProperty(None)
+    dialog = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -391,7 +394,9 @@ class DlTtsSttApp(MDApp):
             try:
                 Environment = autoclass("android.os.Environment")
                 self.external_storage = Environment.getExternalStorageDirectory().getAbsolutePath()
-                self.tts_file_saver.show(self.external_storage)  # Open /sdcard on Android
+                tts_save_path = os.path.join(self.external_storage, "Music", "TTS")
+                os.makedirs(tts_save_path, exist_ok=True)
+                self.tts_file_saver.show(tts_save_path)  # Open /sdcard on Android
             except Exception:
                 self.tts_file_saver.show_disks()  # Fallback to showing available disks
         else:
@@ -479,6 +484,55 @@ class DlTtsSttApp(MDApp):
             self.add_tts_msg(chat_history_widget, msg_id)
             self.show_toast_msg(tts_status)
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+
+    def show_delete_alert(self):
+        wav_count = 0
+        for filename in os.listdir(self.tts_audio_dir):
+            if filename.endswith(".wav"):
+                wav_count += 1
+        self.dialog = MDDialog(
+            title="Delete all generated Audio files?",
+            text=f"There are total: {wav_count} audio files. This action cannot be undone!",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=self.close_dialog
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    theme_text_color="Custom",
+                    text_color="red",
+                    on_release=self.delete_tts_action
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def close_dialog(self, instance):
+        # Function to close the dialog
+        print("Action cancelled")
+        if self.dialog:
+            self.dialog.dismiss()
+
+    def delete_tts_action(self, instance):
+        # Custom function called when DISCARD is clicked
+        for filename in os.listdir(self.tts_audio_dir):
+            if filename.endswith(".wav"):
+                file_path = os.path.join(self.tts_audio_dir, filename)
+                try:
+                    os.unlink(file_path)
+                    print(f"Deleted {file_path}")
+                except Exception as e:
+                    print(f"Could not delete the audion files, error: {e}")
+        self.show_toast_msg("Executed the audio cleanup!")
+        if self.dialog:
+            self.dialog.dismiss()
+
+    def open_link(self, instance, url):
+        import webbrowser
+        webbrowser.open(url)
 
 if __name__ == '__main__':
     DlTtsSttApp().run()
