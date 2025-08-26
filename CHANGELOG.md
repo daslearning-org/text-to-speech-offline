@@ -1,5 +1,10 @@
 ## Changes on the app
 
+### v0.2.1
+- Added Kivy Accordion in Settings for better manageability
+- Replaced links with clickable IconListItem under Help & Support
+- Some minor code restructure for better reusability (example: dedicated function for pop dialog)
+
 ### v0.2.0
 - Added a Cleanup option to delete all generated audio files and also added relevant links into `Settings`
 
