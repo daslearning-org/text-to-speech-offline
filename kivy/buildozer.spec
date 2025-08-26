@@ -30,7 +30,7 @@ source.exclude_dirs = tests, logs, bin, dist, patches, .venv, venv, env, .env, p
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.2.0
+#version = 0.2.0
 
 #android.sign = True
 #android.keystore = /home/somnath/myContents/softwares/android/apk/dl-tts.jks
@@ -40,8 +40,8 @@ version = 0.2.0
 #android.key.password = %(KEYSTORE_PASSWORD)s
 
 # (str) Application versioning (method 2)
-# version.regex = __version__ = ['"](.*)['"]
-# version.filename = %(source.dir)s/main.py
+version.regex = __version__ = ['"](.*)['"]
+version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # /<your-codebase>/.buildozer/android/platform/build-arm64-v8a/build/python-installs/ttssts/arm64-v8a

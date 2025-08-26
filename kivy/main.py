@@ -31,6 +31,9 @@ Window.softinput_mode = "below_target"
 
 # Import your local screen classes & modules
 from screens.tts import TtsBox, UsrMsg, TtsResp
+from screens.setting import SettingsBox
+
+## OS specific imports
 if platform == "android":
     from jnius import autoclass, PythonJavaClass, java_method
     MediaPlayer = autoclass('android.media.MediaPlayer')
@@ -39,6 +42,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
+__version__ = "0.2.1"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -224,7 +228,7 @@ class DlTtsSttApp(MDApp):
     tts_queue = ObjectProperty(None)
     tts_save_filename = StringProperty("")
     external_storage = ObjectProperty(None)
-    dialog = ObjectProperty(None)
+    txt_dialog = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -352,6 +356,18 @@ class DlTtsSttApp(MDApp):
             pos_hint={"center_x": 0.5},
             duration=3
         ).open()
+
+    def show_text_dialog(self, title, text="", buttons=[]):
+        self.txt_dialog = MDDialog(
+            title=title,
+            text=text,
+            buttons=buttons
+        )
+        self.txt_dialog.open()
+
+    def txt_dialog_closer(self, instance):
+        if self.txt_dialog:
+            self.txt_dialog.dismiss()
 
     def play_audio(self, instance):
         parent_id = instance.parent.id
@@ -490,7 +506,7 @@ class DlTtsSttApp(MDApp):
         for filename in os.listdir(self.tts_audio_dir):
             if filename.endswith(".wav"):
                 wav_count += 1
-        self.dialog = MDDialog(
+        self.show_text_dialog(
             title="Delete all generated Audio files?",
             text=f"There are total: {wav_count} audio files. This action cannot be undone!",
             buttons=[
@@ -498,7 +514,7 @@ class DlTtsSttApp(MDApp):
                     text="CANCEL",
                     theme_text_color="Custom",
                     text_color=self.theme_cls.primary_color,
-                    on_release=self.close_dialog
+                    on_release=self.txt_dialog_closer
                 ),
                 MDFlatButton(
                     text="DELETE",
@@ -508,13 +524,6 @@ class DlTtsSttApp(MDApp):
                 ),
             ],
         )
-        self.dialog.open()
-
-    def close_dialog(self, instance):
-        # Function to close the dialog
-        print("Action cancelled")
-        if self.dialog:
-            self.dialog.dismiss()
 
     def delete_tts_action(self, instance):
         # Custom function called when DISCARD is clicked
@@ -527,12 +536,36 @@ class DlTtsSttApp(MDApp):
                 except Exception as e:
                     print(f"Could not delete the audion files, error: {e}")
         self.show_toast_msg("Executed the audio cleanup!")
-        if self.dialog:
-            self.dialog.dismiss()
+        self.txt_dialog_closer(instance)
 
     def open_link(self, instance, url):
         import webbrowser
         webbrowser.open(url)
+
+    def update_link_open(self, instance):
+        self.txt_dialog_closer(instance)
+        self.open_link(instance=instance, url="https://github.com/daslearning-org/text-to-speech-offline/releases")
+
+    def update_checker(self, instance):
+        buttons = [
+            MDFlatButton(
+                text="Cancel",
+                theme_text_color="Custom",
+                text_color=self.theme_cls.primary_color,
+                on_release=self.txt_dialog_closer
+            ),
+            MDFlatButton(
+                text="Releases",
+                theme_text_color="Custom",
+                text_color="green",
+                on_release=self.update_link_open
+            ),
+        ]
+        self.show_text_dialog(
+            "Check for update",
+            f"Your version: {__version__}",
+            buttons
+        )
 
 if __name__ == '__main__':
     DlTtsSttApp().run()
