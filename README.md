@@ -39,7 +39,7 @@ python main.py
 The Kivy project has a great tool named [Buildozer](https://buildozer.readthedocs.io/en/latest/) which can make mobile apps for `Android` & `iOS`
 
 ### 📱 Build Android App
-A Linux environment is recommended for the app development. If you are on Windows, you may use `WSL` or any `Virtual Machine`. As of now the `buildozer` tool works on Python version `3.10` at maximum. I am going to use Python `3.9`
+A Linux environment is recommended for the app development. If you are on Windows, you may use `WSL` or any `Virtual Machine`. As of now the `buildozer` tool works on Python version `3.11` at maximum. I am going to use Python `3.11`.
 
 ```bash
 # add the python repository
@@ -47,7 +47,7 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 
 # install all dependencies.
-sudo apt install -y ant autoconf automake ccache cmake g++ gcc lbzip2 libffi-dev libltdl-dev libtool libssl-dev make openjdk-17-jdk patch pkg-config python3-dev python3-pip unzip wget zip git python3.9 python3.9-venv
+sudo apt install -y ant autoconf automake ccache cmake g++ gcc git lbzip2 libffi-dev libltdl-dev libtool libssl-dev make openjdk-17-jdk patch patchelf pkg-config python3-pip python3.11 python3.11-venv python3.11-dev unzip wget zip
 
 # optionally you may check the java installation with below commands
 java -version
@@ -63,7 +63,7 @@ pip install -r req_android.txt
 # build the android apk
 buildozer android debug # this may take a good amount of time for the first time & will generate the apk in the bin directory
 
-## build AAB for playstore
+## build AAB for playstore (may require some rework)
 # generate a key
 export APP_ANDROID_KEYSTORE_PASSWORD="yourpassword"
 export APP_ANDROID_KEY_PASSWORD="yourpassword"
