@@ -383,7 +383,7 @@ class DlTtsSttApp(MDApp):
                 font_style = "Subtitle1" # change size for android
             ),
             md_bg_color=bg_color,
-            y=dp(24),
+            y=dp(64),
             pos_hint={"center_x": 0.5},
             duration=3
         ).open()
