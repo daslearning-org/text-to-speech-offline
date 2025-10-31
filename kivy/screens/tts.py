@@ -30,10 +30,10 @@ Builder.load_string('''
 <TtsResp>:
     orientation: 'horizontal'
     size_hint_y: None
-    size_hint_x: 0.9
+    size_hint_x: 0.7
     pos_hint: {"x": 0}
     height: self.minimum_height + dp(10)
-    padding: 4, 2
+    padding: dp(4)
     spacing: dp(2)
     canvas.before:
         Color:

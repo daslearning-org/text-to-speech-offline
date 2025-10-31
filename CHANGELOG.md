@@ -1,5 +1,11 @@
 ## Changes on the app
 
+### v0.2.2
+- Fixing the edge cut out issue on android 15
+- Changing permissions for android versions
+- Using ndk:28c for 16kb page support & target api version to 35 (android 15)
+- Closing the drop down menu after voice model selection
+
 ### v0.2.1
 - Added Kivy Accordion in Settings for better manageability
 - Replaced links with clickable IconListItem under Help & Support
