@@ -18,6 +18,7 @@ from kivymd.uix.spinner import MDSpinner
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
@@ -42,7 +43,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -215,6 +216,21 @@ def pyjnuis_audio_player():
             #continue
             print(f"No new audio... {e}")
 
+# Custom kivy classes
+class MainScreenBox(MDBoxLayout):
+    top_pad = NumericProperty(0)
+    bottom_pad = NumericProperty(0)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if platform == "android":
+            try:
+                from android.display_cutout import get_height_of_bar
+                self.top_pad = int(get_height_of_bar('status'))
+                self.bottom_pad = int(get_height_of_bar('navigation'))
+            except Exception as e:
+                print(f"Failed android 15 padding: {e}")
+                self.top_pad = 32
+                self.bottom_pad = 48
 
 # The KivyMD app
 class DlTtsSttApp(MDApp):
@@ -471,7 +487,8 @@ class DlTtsSttApp(MDApp):
             text = f"{id_to_set}.wav",
             font_style = "Caption", # change size for android
             allow_selection = True,
-            allow_copy = True
+            allow_copy = True,
+            adaptive_width = True
         ))
         tts_resp.add_widget(MDSpinner(
             size_hint = [None, None],

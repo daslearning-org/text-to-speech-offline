@@ -13,40 +13,43 @@
 
 MDScreen:
 
-    MDBottomNavigation:
-        id: bottom_navigation_bar
-        panel_color: "#edcffa"
-        selected_color_background: "orange"
-        text_color_active: "black"
+    MainScreenBox:
+        orientation: 'vertical'
+        padding: 0, self.top_pad, 0, self.bottom_pad
+        MDBottomNavigation:
+            id: bottom_navigation_bar
+            panel_color: "#edcffa"
+            selected_color_background: "orange"
+            text_color_active: "black"
 
-        MDBottomNavigationItem:
-            id: nav_tts
-            name: 'tts'
-            text: 'Text to Speach'
-            icon: 'speaker-wireless'
-            badge_icon: "numeric-0"
+            MDBottomNavigationItem:
+                id: nav_tts
+                name: 'tts'
+                text: 'Text to Speach'
+                icon: 'speaker-wireless'
+                badge_icon: "numeric-0"
 
-            TtsBox:
-                id: tts_screen
+                TtsBox:
+                    id: tts_screen
 
-        MDBottomNavigationItem:
-            id: nav_stt
-            name: 'stt'
-            text: 'Speach to Text'
-            icon: 'microphone'
-            badge_icon: "numeric-0"
+            MDBottomNavigationItem:
+                id: nav_stt
+                name: 'stt'
+                text: 'Speach to Text'
+                icon: 'microphone'
+                badge_icon: "numeric-0"
 
-            MDLabel:
-                text: 'Speach to Text, coming soon...'
-                halign: 'center'
+                MDLabel:
+                    text: 'Speach to Text, coming soon...'
+                    halign: 'center'
 
-        MDBottomNavigationItem:
-            id: nav_settings
-            name: 'settings'
-            text: 'Settings'
-            icon: 'wrench'
+            MDBottomNavigationItem:
+                id: nav_settings
+                name: 'settings'
+                text: 'Settings'
+                icon: 'wrench'
 
-            SettingsBox:
-                id: settings_scroll
+                SettingsBox:
+                    id: settings_scroll
 
 # End
