@@ -2,7 +2,7 @@
 
 ### v0.2.2
 - Fixing the edge cut out issue on android 15
-- Changing permissions for android versions
+- Changing permissions for different android versions
 - Using ndk:28c for 16kb page support & target api version to 35 (android 15)
 - Closing the drop down menu after voice model selection
 

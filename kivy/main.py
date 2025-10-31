@@ -260,15 +260,27 @@ class DlTtsSttApp(MDApp):
         return Builder.load_file(kv_file_path)
 
     def on_start(self):
-        #print(self.root.ids)
         global save_path
+        file_m_height = 1
         # request write permission on Android
         if platform == "android":
             from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE
-            ])
+            sdk_version = 30
+            try:
+                VERSION = autoclass('android.os.Build$VERSION')
+                sdk_version = VERSION.SDK_INT
+                print(f"Android SDK: {sdk_version}")
+            except Exception as e:
+                print(f"Could not check the android SDK version: {e}")
+            if sdk_version >= 33:  # Android 13+
+                permissions = [Permission.READ_MEDIA_AUDIO]
+            elif sdk_version >= 30: # Android 11-12
+                permissions = [Permission.READ_EXTERNAL_STORAGE]
+            else:
+                permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+            request_permissions(permissions)
+            if sdk_version >= 35: # Android edge cutout
+                file_m_height = 0.9
             context = autoclass('org.kivy.android.PythonActivity').mActivity
             android_path = context.getExternalFilesDir(None).getAbsolutePath()
             self.tts_audio_dir = os.path.join(android_path, 'generated')
@@ -287,6 +299,8 @@ class DlTtsSttApp(MDApp):
             exit_manager=self.tts_exit_manager,
             select_path=self.select_tts_path,
             selector="folder",  # Restrict to selecting directories only
+            size_hint_y = file_m_height, #0.9 for andoird cut out problem
+            #pos_hint = {'center_y': 0.8}
         )
         # audio threads
         self.audio_thread.start()
