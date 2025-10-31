@@ -355,6 +355,7 @@ class DlTtsSttApp(MDApp):
                 print(f"Error: {e}")
 
     def menu_callback(self, text_item, model_menu):
+        self.menu.dismiss()
         self.selected_tts_model = text_item
         self.piper = PiperTts(save_dir=self.tts_audio_dir, model_name=self.selected_tts_model)
         model_menu.text = self.selected_tts_model
