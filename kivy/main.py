@@ -420,7 +420,7 @@ class DlTtsSttApp(MDApp):
             if self.manager_open:
                 # Check if we are at the root of the directory tree
                 if self.tts_file_saver.current_path == self.external_storage:
-                    self.show_toast_msg(f"Closing file manager from main storage")
+                    self.show_toast_msg("Closing file manager")
                     self.tts_exit_manager()
                 else:
                     self.tts_file_saver.back()  # Navigate back within file manager

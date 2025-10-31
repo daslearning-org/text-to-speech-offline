@@ -100,12 +100,12 @@ Builder.load_string('''
         MultiLingualTextField:
             id: chat_input
 
-        MDFillRoundFlatButton:
-            id: send_msg_button
-            text: "Send"
-            size_hint_x: 0.2
-            size_hint_y: 1
-            font_size: sp(18)
+        MDIconButton:
+            icon: "send"
+            icon_size: sp(32)
+            pos_hint: {'center_y': 0.5}
+            theme_icon_color: "Custom"
+            icon_color: app.theme_cls.primary_color
             on_release: app.send_message(self, chat_input, chat_history_id)
 ''')
 
