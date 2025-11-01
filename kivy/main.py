@@ -266,6 +266,7 @@ class DlTtsSttApp(MDApp):
         if platform == "android":
             from android.permissions import request_permissions, Permission
             sdk_version = 30
+            file_m_height = 0.9
             try:
                 VERSION = autoclass('android.os.Build$VERSION')
                 sdk_version = VERSION.SDK_INT
@@ -279,8 +280,6 @@ class DlTtsSttApp(MDApp):
             else:
                 permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
             request_permissions(permissions)
-            if sdk_version >= 35: # Android edge cutout
-                file_m_height = 0.9
             context = autoclass('org.kivy.android.PythonActivity').mActivity
             android_path = context.getExternalFilesDir(None).getAbsolutePath()
             self.tts_audio_dir = os.path.join(android_path, 'generated')
