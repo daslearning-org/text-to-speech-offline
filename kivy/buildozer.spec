@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = Text to Speech Offline
+title = DlTts - Text to Speech Offline
 
 # (str) Package name
 package.name = ttssts
