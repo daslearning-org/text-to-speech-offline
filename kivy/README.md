@@ -1,11 +1,19 @@
-# Offline TTS & STT
-Offline text to speach and speach to text app which can run on `Android`, `iOS`, `Windows` & `Linux`.
+# DlTTS - Offline Text to Speech
+An offline Text to Speech app which can generate voices on many languages using android native TTS feature. It is really lightweight and simple application which is completely Private and Privacy focused.
 
-### Some common troubleshootings
+🚀 Features
+✅️ Offline Text to Speech.
+✅️ Save the generated Audio files in phone memory.
+✅️ Generate voices on the Go, just by typing it, no Internet is required.
+✅️ Light-weight, cross-platform, open-source application.
+✅️ Private & secure - No trackers, no Ads, No data collection, completely Private.
 
-- Known buildozer [breaking modules](https://github.com/kivy/python-for-android/blob/develop/ci/constants.py)
+🤔 Why would you prefer our Offline TTS app?
+👉 It is free & no subscription required (open source).
+👉 You can also run this on desktop platforms like Windows & Linux.
+👉 You own your data as we do not collect any data.
 
-- Capture buildozer logs
-```bash
-buildozer android debug 2>&1 | tee build_log.txt
-```
+📝 Please note:
+📌 You can store your audio files in "Downloads" or "Music" or any subfolders under this two folders.
+
+✉️ For any support or query, please use the "Contact Us" option from the App itself.
