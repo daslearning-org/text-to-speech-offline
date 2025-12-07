@@ -2,6 +2,7 @@
 
 ### v0.3.0
 - Changing the initial voice selection method.
+- Adding desktop app & models will be downloaded from `Piper-TTS` repo.
 
 ### v0.2.2
 - Fixing the edge cut out issue on android 15

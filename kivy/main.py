@@ -32,7 +32,7 @@ Window.softinput_mode = "below_target"
 
 # Import your local screen classes & modules
 from screens.tts import TtsBox, UsrMsg, TtsResp
-from screens.setting import SettingsBox
+from screens.setting import SettingsBox, DemoPiperLink, DownloadPiperVoice
 
 ## OS specific imports
 if platform == "android":
@@ -43,7 +43,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -262,6 +262,8 @@ class DlTtsSttApp(MDApp):
     def on_start(self):
         global save_path
         file_m_height = 1
+        settings_list = self.root.ids.settings_scroll.ids.settings_list
+        support_list = self.root.ids.settings_scroll.ids.support_list
         # request write permission on Android
         if platform == "android":
             from android.permissions import request_permissions, Permission
@@ -283,13 +285,22 @@ class DlTtsSttApp(MDApp):
             context = autoclass('org.kivy.android.PythonActivity').mActivity
             android_path = context.getExternalFilesDir(None).getAbsolutePath()
             self.tts_audio_dir = os.path.join(android_path, 'generated')
+            self.model_path = os.path.join(android_path, 'models')
+            self.config_path = os.path.join(android_path, 'config')
             self.audio_thread = threading.Thread(target=pyjnuis_audio_player, daemon=True)
         else:
             self.audio_thread = threading.Thread(target=audio_player_thread, daemon=True)
             self.tts_audio_dir = os.path.join(self.user_data_dir, 'generated')
+            self.model_path = os.path.join(self.user_data_dir, 'models')
+            self.config_path = os.path.join(self.user_data_dir, 'config')
+            self.desktop_voice = []
+            demo_voices = DemoPiperLink()
+            support_list.add_widget(demo_voices)
         print(f"Application data directory: {self.user_data_dir}")
         # create the paths
         os.makedirs(self.tts_audio_dir, exist_ok=True)
+        os.makedirs(self.model_path, exist_ok=True)
+        os.makedirs(self.config_path, exist_ok=True)
         save_path = self.tts_audio_dir
         print(f"Generated audio will be saved in: {self.tts_audio_dir}")
         # tts file saver using filemanager
@@ -308,7 +319,7 @@ class DlTtsSttApp(MDApp):
         self.kv_play_thread.start()
         # voice models menu
         model_menu = self.root.ids.tts_screen.ids.model_menu
-        self.piper = PiperTts(save_dir=self.tts_audio_dir)
+        self.piper = PiperTts(save_dir=self.tts_audio_dir, model_path=self.model_path)
         tts_models = self.piper.models_list()
         tts_models.sort() # list all languages in ascending order
         menu_items = [
