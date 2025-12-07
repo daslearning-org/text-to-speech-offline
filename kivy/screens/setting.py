@@ -15,9 +15,15 @@ Builder.load_string('''
 
 <DownloadPiperVoice>:
     text: "Download voices"
-    on_release: app.open_link(self, "https://youtu.be/AhcjJu2YwUE")
+    on_release: app.download_voices()
     IconLeftWidget:
         icon: "download"
+
+<DeletePiperVoice>:
+    text: "Delete voices"
+    on_release: app.delete_voices()
+    IconLeftWidget:
+        icon: "delete"
 
 <DemoPiperLink>:
     text: "Check the demo voices"
@@ -90,6 +96,9 @@ class SettingsBox(MDBoxLayout):
 
 class DownloadPiperVoice(OneLineIconListItem):
     """ Download the Piper-TTS voices for Desktop only """
+
+class DeletePiperVoice(OneLineIconListItem):
+    """ Delete the Piper-TTS voices for Desktop only """
 
 class DemoPiperLink(OneLineIconListItem):
     """ Check demo Piper-TTS voices for Desktop only """

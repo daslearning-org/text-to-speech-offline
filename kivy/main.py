@@ -32,7 +32,7 @@ Window.softinput_mode = "below_target"
 
 # Import your local screen classes & modules
 from screens.tts import TtsBox, UsrMsg, TtsResp
-from screens.setting import SettingsBox, DemoPiperLink, DownloadPiperVoice
+from screens.setting import SettingsBox, DemoPiperLink, DownloadPiperVoice, DeletePiperVoice
 
 ## OS specific imports
 if platform == "android":
@@ -295,7 +295,11 @@ class DlTtsSttApp(MDApp):
             self.config_path = os.path.join(self.user_data_dir, 'config')
             self.desktop_voice = []
             demo_voices = DemoPiperLink()
+            download_piper = DownloadPiperVoice()
+            delete_piper = DeletePiperVoice()
             support_list.add_widget(demo_voices)
+            settings_list.add_widget(download_piper)
+            settings_list.add_widget(delete_piper)
         print(f"Application data directory: {self.user_data_dir}")
         # create the paths
         os.makedirs(self.tts_audio_dir, exist_ok=True)
@@ -409,7 +413,7 @@ class DlTtsSttApp(MDApp):
         else:
             self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
 
-    def show_toast_msg(self, message, is_error=False):
+    def show_toast_msg(self, message, is_error=False, duration=3):
         from kivymd.uix.snackbar import MDSnackbar
         bg_color = (0.2, 0.6, 0.2, 1) if not is_error else (0.8, 0.2, 0.2, 1)
         MDSnackbar(
@@ -420,7 +424,7 @@ class DlTtsSttApp(MDApp):
             md_bg_color=bg_color,
             y=dp(64),
             pos_hint={"center_x": 0.5},
-            duration=3
+            duration=duration
         ).open()
 
     def show_text_dialog(self, title, text="", buttons=[]):
@@ -570,6 +574,12 @@ class DlTtsSttApp(MDApp):
             self.add_tts_msg(chat_history_widget, msg_id)
             self.show_toast_msg(tts_status)
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+
+    def download_voices(self):
+        self.show_toast_msg("Download will be added later", duration=2)
+
+    def delete_voices(self):
+        self.show_toast_msg(f"Delete piper voices triggered", is_error=True)
 
     def show_delete_alert(self):
         wav_count = 0
