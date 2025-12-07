@@ -325,9 +325,12 @@ class DlTtsSttApp(MDApp):
             items=menu_items,
         )
         if len(tts_models) >= 1:
-            self.selected_tts_model = tts_models[0]
+            self.selected_tts_model = "select a model"
         else:
-            self.selected_tts_model = "no-android-voice"
+            if platform == "android":
+                self.selected_tts_model = "no-android-voice"
+            else:
+                self.selected_tts_model = "download voice(s)"
         model_menu.text = self.selected_tts_model
         print("Init success...")
 
@@ -369,9 +372,13 @@ class DlTtsSttApp(MDApp):
 
     def menu_callback(self, text_item, model_menu):
         self.menu.dismiss()
-        self.selected_tts_model = text_item
-        self.piper = PiperTts(save_dir=self.tts_audio_dir, model_name=self.selected_tts_model)
-        model_menu.text = self.selected_tts_model
+        set_stat = self.piper.set_model(model_name=text_item)
+        if set_stat:
+            self.selected_tts_model = text_item
+            model_menu.text = self.selected_tts_model
+            self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+        else:
+            self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
 
     def show_toast_msg(self, message, is_error=False):
         from kivymd.uix.snackbar import MDSnackbar
@@ -519,6 +526,9 @@ class DlTtsSttApp(MDApp):
         chat_history_widget.add_widget(UsrMsg(text=msg_to_add))
 
     def send_message(self, button_instance, chat_input_widget, chat_history_widget):
+        if self.selected_tts_model in ["", "download-voice", "no-android-voice", "select-model"]:
+            self.show_toast_msg("You need to choose a working model first!", is_error=True)
+            return
         user_message = chat_input_widget.text.strip()
         #print(user_message)
         if user_message:

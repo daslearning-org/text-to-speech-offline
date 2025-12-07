@@ -1,5 +1,8 @@
 ## Changes on the app
 
+### v0.3.0
+- Not selecting a default voice model by default, users need to choose one.
+
 ### v0.2.2
 - Fixing the edge cut out issue on android 15
 - Changing permissions for different android versions

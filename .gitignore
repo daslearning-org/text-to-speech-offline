@@ -16,6 +16,8 @@ NotoSansBengali-Regular.ttf
 *.apk
 *.aab
 logs/
+models/
+modelss/
 
 # C extensions
 *.so

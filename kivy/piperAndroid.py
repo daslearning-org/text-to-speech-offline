@@ -65,23 +65,30 @@ class MyTTSCallback(PythonJavaClass):
 
 # custom class using android native TTS, kept same name as PiperTts
 class PiperTts:
-    def __init__(self, save_dir=save_path, model_name=None):
+    def __init__(self, save_dir=save_path, model_path=model_path):
+        self.save_dir = save_dir
+        self.model_path = model_path
         self._init_event = Event()
         self._init_listener = MyOnInitListener(self._init_event)
         self.tts = TextToSpeech(activity, self._init_listener)
         self._init_event.wait()
-        self.save_dir = save_dir
-        if model_name:
+
+    def set_model(self, model_name):
+        try:
             voices = self.tts.getVoices()
             for voice in voices.toArray():
                 if voice.getName() == model_name:
                     result = self.tts.setVoice(voice)
                     if result == TextToSpeech.SUCCESS:
                         print(f"Voice '{model_name}' set successfully.")
+                        return True
                     else:
                         print(f"Failed to set voice '{model_name}'")
-        else:
+                        return False
+        except Exception as e:
             self.tts.setLanguage(Locale.US)
+            print(f"Failed to set voice '{model_name}' with error: {e}")
+            return True
 
     def transcribe(self, message: str, filename: str):
         event = Event()
@@ -119,5 +126,5 @@ class PiperTts:
                 #print(f"Downloaded voice: {voice.getName()}")
                 print(f"Voice: {voice.getName()}, Country: {voice.getLocale().getCountry()}, Language: {voice.getLocale().getLanguage()}, Requires network: {voice.isNetworkConnectionRequired()}")
         except Exception as e:
-            print(f"An error occurred while reading directory '{model_path}': {e}")
+            print(f"Error while fetching android voices: {e}")
         return all_models
