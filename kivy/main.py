@@ -325,12 +325,30 @@ class DlTtsSttApp(MDApp):
             items=menu_items,
         )
         if len(tts_models) >= 1:
-            self.selected_tts_model = "select a model"
+            self.selected_tts_model = "select-model"
+            if platform == "android":
+                text_item = "en-US-language"
+                set_stat = self.piper.set_model(model_name=text_item)
+                if set_stat:
+                    self.selected_tts_model = text_item
+                    model_menu.text = self.selected_tts_model
+                    self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+                else:
+                    self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
+            else:
+                text_item = tts_models[0]
+                set_stat = self.piper.set_model(model_name=text_item)
+                if set_stat:
+                    self.selected_tts_model = text_item
+                    model_menu.text = self.selected_tts_model
+                    self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+                else:
+                    self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
         else:
             if platform == "android":
                 self.selected_tts_model = "no-android-voice"
             else:
-                self.selected_tts_model = "download voice(s)"
+                self.selected_tts_model = "download-voice"
         model_menu.text = self.selected_tts_model
         print("Init success...")
 
