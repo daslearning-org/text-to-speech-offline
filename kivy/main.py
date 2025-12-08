@@ -7,6 +7,7 @@ import string
 import threading
 import queue
 import shutil
+import requests
 
 # kivy world
 from kivymd.app import MDApp
@@ -24,6 +25,7 @@ from kivy.core.window import Window
 from kivy.metrics import dp, sp
 from kivy.utils import platform
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.clock import Clock
 
 # Other public modules
 
@@ -253,10 +255,9 @@ class DlTtsSttApp(MDApp):
     def build(self):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.accent_palette = "Orange"
-
+        self.is_downloading = False
         characters = string.ascii_lowercase + string.digits
         self.new_session_id = ''.join(random.choice(characters) for _ in range(6))
-
         return Builder.load_file(kv_file_path)
 
     def on_start(self):
@@ -307,6 +308,7 @@ class DlTtsSttApp(MDApp):
         os.makedirs(self.config_path, exist_ok=True)
         save_path = self.tts_audio_dir
         print(f"Generated audio will be saved in: {self.tts_audio_dir}")
+        self.voices_json = os.path.join(self.config_path, 'voices.json')
         # tts file saver using filemanager
         self.manager_open = False
         self.tts_file_saver = MDFileManager(
@@ -575,8 +577,65 @@ class DlTtsSttApp(MDApp):
             self.show_toast_msg(tts_status)
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
 
+    def update_download_progress(self, downloaded, total_size):
+        if total_size > 0:
+            percentage = (downloaded / total_size) * 100
+            self.download_progress.text = f"Progress: {percentage:.1f}%"
+        else:
+            self.download_progress.text = f"Progress: {downloaded} bytes"
+
+    def download_file(self, download_url, download_path):
+        filename = download_url.split("/")[-1]
+        filename = filename.replace("?download=true", "")
+        try:
+            self.is_downloading = filename
+            with requests.get(download_url, stream=True) as req:
+                req.raise_for_status()
+                total_size = int(req.headers.get('content-length', 0))
+                downloaded = 0
+                with open(download_path, 'wb') as f:
+                    for chunk in req.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            Clock.schedule_once(lambda dt: self.update_download_progress(downloaded, total_size))
+            if os.path.exists(download_path):
+                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download success at: {download_path}"))
+            else:
+                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading the onnx file: {e} 😞")
+            Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
+        self.is_downloading = False
+
+    def popup_download_model(self):
+        buttons = [
+            MDFlatButton(
+                text="Cancel",
+                theme_text_color="Custom",
+                text_color=self.theme_cls.primary_color,
+                on_release=self.txt_dialog_closer
+            ),
+            MDFlatButton(
+                text="Ok",
+                theme_text_color="Custom",
+                text_color="green",
+                on_release=self.initiate_model_download
+            ),
+        ]
+        self.show_text_dialog(
+            "Downlaod the model file",
+            self.model_file_size,
+            buttons
+        )
+
     def download_voices(self):
-        self.show_toast_msg("Download will be added later", duration=2)
+        print("Download called")
+        voice_json_present = os.path.exists(self.voices_json)
+        if voice_json_present:
+            print("Need to trigger the popup menu")
+        else:
+            print("Need to download the voices.json from HF")
 
     def delete_voices(self):
         self.show_toast_msg(f"Delete piper voices triggered", is_error=True)

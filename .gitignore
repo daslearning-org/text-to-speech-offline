@@ -18,6 +18,7 @@ NotoSansBengali-Regular.ttf
 logs/
 models/
 modelss/
+test_codes/
 
 # C extensions
 *.so

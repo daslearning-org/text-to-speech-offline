@@ -158,3 +158,8 @@ adb uninstall in.daslearning.ttsstt
 # you may use buildozer deploy run to check the adb
 buildozer android debug deploy run
 ```
+
+## Reference links
+- Piper-TTS [voices-list](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json)
+- Listen to [voice samples](https://rhasspy.github.io/piper-samples/)
+- Piper-TTS [GitHub](https://github.com/OHF-Voice/piper1-gpl)
