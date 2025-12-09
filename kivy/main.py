@@ -385,7 +385,7 @@ class DlTtsSttApp(MDApp):
             caller=model_menu,
             items=menu_items,
         )
-        if len(tts_models) >= 1:
+        if len(tts_models) >= 1 and self.selected_tts_model == "download-voice":
             model_menu.text = "select-model"
         threading.Thread(target=self.sync_piper_voices, args=(False,), daemon=True).start()
 
@@ -650,26 +650,36 @@ class DlTtsSttApp(MDApp):
             Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
         self.is_downloading = False
         self.to_download_model = "na"
+        Clock.schedule_once(lambda dt: self.download_stat_close())
+
+    def download_stat_close(self):
+        if self.download_progress:
+            self.download_progress.dismiss()
 
     def initiate_model_download(self, instance, callback=None):
-        self.txt_dialog_closer(instance)
-        #debug
-        print(f"model: {self.model_url}, model_json: {self.model_json_url}")
+        self.txt_dialog_closer(None)
+        #debug print(f"model: {self.model_url}, model_json: {self.model_json_url}")
         if self.to_download_model == "na":
             return
         model_json_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx.json")
         model_full_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx")
         dwnl_model_json_stat = self.download_other_files(self.model_json_url, model_json_path)
         if dwnl_model_json_stat:
-            self.download_progress = MDLabel(
-                text = "Starting download process...",
-                font_style = "Subtitle1",
-                halign = 'left',
-                adaptive_height = True,
-                #theme_text_color = "Custom",
-                #text_color = "#f7f7f5"
+            #self.download_progress = MDLabel(
+            #    text = "Starting download process...",
+            #    font_style = "Subtitle1",
+            #    halign = 'left',
+            #    adaptive_height = True,
+            #    #theme_text_color = "Custom",
+            #    #text_color = "#f7f7f5"
+            #)
+            self.download_progress = MDDialog(
+                title=f"Downloading {self.to_download_model}",
+                text="Starting download process...",
+                #buttons=buttons
             )
-            self.chat_history_id.add_widget(self.download_progress)
+            self.download_progress.open()
+            #self.chat_history_id.add_widget(self.download_progress)
             self.download_model_file(self.model_url, model_full_path)
 
     def download_model_file(self, model_url, download_path, instance=None):
@@ -714,6 +724,9 @@ class DlTtsSttApp(MDApp):
         self.popup_download_model()
 
     def download_voices(self, instance=None):
+        if self.is_downloading:
+            self.show_toast_msg(f"Please wait for the {self.is_downloading} download to finish!", is_error=True)
+            return
         caller = self.root.ids.settings_scroll.ids.settings_list
         if os.path.exists(self.voices_json):
             print("Need to trigger the popup menu")
@@ -722,7 +735,9 @@ class DlTtsSttApp(MDApp):
             with open(self.voices_json, "r") as f:
                 self.voices_obj = json.load(f)
             for voice in self.voices_obj:
-                self.piper_voice_list.append(voice)
+                model_full_path = os.path.join(self.model_path, f"{voice}.onnx")
+                if not os.path.exists(model_full_path):
+                    self.piper_voice_list.append(voice)
             menu_items = [
                 {
                     "text": voice,

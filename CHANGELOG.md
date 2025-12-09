@@ -2,7 +2,8 @@
 
 ### v0.3.0
 - Changing the initial voice selection method.
-- Adding desktop app & models will be downloaded from `Piper-TTS` repo.
+- Adding desktop app & dekstop voice models can be downloaded from `Piper-TTS` repo in an easy prompted manner.
+- The desktop voices can be deleted as well [not yet implemented]
 
 ### v0.2.2
 - Fixing the edge cut out issue on android 15

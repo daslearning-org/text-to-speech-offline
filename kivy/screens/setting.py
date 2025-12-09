@@ -14,13 +14,13 @@ from kivy.parser import parse_color
 Builder.load_string('''
 
 <DownloadPiperVoice>:
-    text: "Download voices"
+    text: "Download voice models"
     on_release: app.download_voices(self)
     IconLeftWidget:
         icon: "download"
 
 <DeletePiperVoice>:
-    text: "Delete voices"
+    text: "Delete voice models"
     on_release: app.delete_voices()
     IconLeftWidget:
         icon: "delete"
