@@ -665,21 +665,12 @@ class DlTtsSttApp(MDApp):
         model_full_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx")
         dwnl_model_json_stat = self.download_other_files(self.model_json_url, model_json_path)
         if dwnl_model_json_stat:
-            #self.download_progress = MDLabel(
-            #    text = "Starting download process...",
-            #    font_style = "Subtitle1",
-            #    halign = 'left',
-            #    adaptive_height = True,
-            #    #theme_text_color = "Custom",
-            #    #text_color = "#f7f7f5"
-            #)
             self.download_progress = MDDialog(
                 title=f"Downloading {self.to_download_model}",
                 text="Starting download process...",
                 #buttons=buttons
             )
             self.download_progress.open()
-            #self.chat_history_id.add_widget(self.download_progress)
             self.download_model_file(self.model_url, model_full_path)
 
     def download_model_file(self, model_url, download_path, instance=None):
@@ -731,20 +722,20 @@ class DlTtsSttApp(MDApp):
         if os.path.exists(self.voices_json):
             print("Need to trigger the popup menu")
             import json
-            self.piper_voice_list = []
+            piper_voice_list = []
             with open(self.voices_json, "r") as f:
                 self.voices_obj = json.load(f)
             for voice in self.voices_obj:
                 model_full_path = os.path.join(self.model_path, f"{voice}.onnx")
                 if not os.path.exists(model_full_path):
-                    self.piper_voice_list.append(voice)
+                    piper_voice_list.append(voice)
             menu_items = [
                 {
                     "text": voice,
                     #"leading_icon": "speaker-message",
                     "on_release": lambda x=voice: self.download_menu_callback(x),
                     "font_size": sp(24)
-                } for voice in self.piper_voice_list
+                } for voice in piper_voice_list
             ]
             self.download_menu = MDDropdownMenu(
                 items=menu_items,
@@ -755,8 +746,65 @@ class DlTtsSttApp(MDApp):
             print("Need to download the voices.json from HF")
             threading.Thread(target=self.sync_piper_voices, args=(True,), daemon=True).start()
 
+    def delete_voice_action(self, instance):
+        self.txt_dialog_closer(instance)
+        full_model_path = os.path.join(self.model_path, f"{self.delete_voice_name}.onnx")
+        model_config_path = os.path.join(self.model_path, f"{self.delete_voice_name}.onnx.json")
+        try:
+            os.remove(full_model_path)
+            os.remove(model_config_path)
+            self.show_toast_msg(f"Deleted model: {self.delete_voice_name}!")
+            Clock.schedule_once(lambda dt: self.models_dropdown_setter())
+        except Exception as e:
+            print("Error during model deletion: {e}")
+            self.show_toast_msg(f"Couldn't delete model: {self.delete_voice_name}")
+
+    def delete_menu_callback(self, item):
+        self.delete_menu.dismiss()
+        if self.selected_tts_model == item:
+            self.show_toast_msg(f"Cannot delete {item} as it is in use!", is_error=True)
+            return
+        self.delete_voice_name = item
+        self.show_text_dialog(
+            title=f"Delete model: {item} ?",
+            text=f"This action cannot be undone!",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=self.txt_dialog_closer
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    theme_text_color="Custom",
+                    text_color="red",
+                    on_release=self.delete_voice_action
+                ),
+            ],
+        )
+
     def delete_voices(self):
-        self.show_toast_msg(f"Delete piper voices triggered", is_error=True)
+        caller = self.root.ids.settings_scroll.ids.settings_list
+        delete_list = []
+        for filename in os.listdir(self.model_path):
+            if filename.endswith(".onnx"):
+                voice = filename.replace(".onnx", "")
+                delete_list.append(voice)
+        delete_list.sort()
+        menu_items = [
+            {
+                "text": voice,
+                #"leading_icon": "speaker-message",
+                "on_release": lambda x=voice: self.delete_menu_callback(x),
+                "font_size": sp(24)
+            } for voice in delete_list
+        ]
+        self.delete_menu = MDDropdownMenu(
+            items=menu_items,
+            caller=caller,
+        )
+        self.delete_menu.open()
 
     def show_delete_alert(self):
         wav_count = 0
