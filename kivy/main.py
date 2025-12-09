@@ -287,13 +287,11 @@ class DlTtsSttApp(MDApp):
             android_path = context.getExternalFilesDir(None).getAbsolutePath()
             self.tts_audio_dir = os.path.join(android_path, 'generated')
             self.model_path = os.path.join(android_path, 'models')
-            self.config_path = os.path.join(android_path, 'config')
             self.audio_thread = threading.Thread(target=pyjnuis_audio_player, daemon=True)
         else:
             self.audio_thread = threading.Thread(target=audio_player_thread, daemon=True)
             self.tts_audio_dir = os.path.join(self.user_data_dir, 'generated')
             self.model_path = os.path.join(self.user_data_dir, 'models')
-            self.config_path = os.path.join(self.user_data_dir, 'config')
             self.desktop_voice = []
             demo_voices = DemoPiperLink()
             download_piper = DownloadPiperVoice()
@@ -301,14 +299,15 @@ class DlTtsSttApp(MDApp):
             support_list.add_widget(demo_voices)
             settings_list.add_widget(download_piper)
             settings_list.add_widget(delete_piper)
+            self.to_download_model = "na"
+        self.chat_history_id = self.root.ids.tts_screen.ids.chat_history_id
         print(f"Application data directory: {self.user_data_dir}")
         # create the paths
         os.makedirs(self.tts_audio_dir, exist_ok=True)
         os.makedirs(self.model_path, exist_ok=True)
-        os.makedirs(self.config_path, exist_ok=True)
         save_path = self.tts_audio_dir
         print(f"Generated audio will be saved in: {self.tts_audio_dir}")
-        self.voices_json = os.path.join(self.config_path, 'voices.json')
+        self.voices_json = os.path.join(self.model_path, 'voices.json')
         # tts file saver using filemanager
         self.manager_open = False
         self.tts_file_saver = MDFileManager(
@@ -331,7 +330,7 @@ class DlTtsSttApp(MDApp):
         menu_items = [
             {
                 "text": f"{model_name}",
-                "leading_icon": "robot-happy",
+                "leading_icon": "speaker-message",
                 "on_release": lambda x=f"{model_name}": self.menu_callback(x, model_menu),
                 "font_size": sp(24)
             } for model_name in tts_models
@@ -368,6 +367,27 @@ class DlTtsSttApp(MDApp):
                 self.selected_tts_model = "download-voice"
         model_menu.text = self.selected_tts_model
         print("Init success...")
+
+    def models_dropdown_setter(self):
+        model_menu = self.root.ids.tts_screen.ids.model_menu
+        tts_models = self.piper.models_list()
+        tts_models.sort() # list all languages in ascending order
+        menu_items = [
+            {
+                "text": f"{model_name}",
+                "leading_icon": "speaker-message",
+                "on_release": lambda x=f"{model_name}": self.menu_callback(x, model_menu),
+                "font_size": sp(24)
+            } for model_name in tts_models
+        ]
+        self.menu = MDDropdownMenu(
+            md_bg_color="#bdc6b0",
+            caller=model_menu,
+            items=menu_items,
+        )
+        if len(tts_models) >= 1:
+            model_menu.text = "select-model"
+        threading.Thread(target=self.sync_piper_voices, args=(False,), daemon=True).start()
 
     def kv_player_thread(self):
         # Updates the spinner
@@ -577,6 +597,27 @@ class DlTtsSttApp(MDApp):
             self.show_toast_msg(tts_status)
             self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
 
+    def download_other_files(self, url, path):
+        status = False
+        try:
+            with requests.get(url, stream=True) as req:
+                req.raise_for_status()
+                with open(path, 'wb') as f:
+                    for chunk in req.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+            if os.path.exists(path):
+                status = True
+        except Exception as e:
+            print(f"Cannot voices json from HF: {e}")
+        return status
+
+    def sync_piper_voices(self, callback=False):
+        voice_url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/voices.json?download=true"
+        download_stat = self.download_other_files(voice_url, self.voices_json)
+        if download_stat and callback:
+            Clock.schedule_once(lambda dt: self.download_voices())
+
     def update_download_progress(self, downloaded, total_size):
         if total_size > 0:
             percentage = (downloaded / total_size) * 100
@@ -600,13 +641,42 @@ class DlTtsSttApp(MDApp):
                             downloaded += len(chunk)
                             Clock.schedule_once(lambda dt: self.update_download_progress(downloaded, total_size))
             if os.path.exists(download_path):
-                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download success at: {download_path}"))
+                print(f"Model {filename}, is downloaded at {download_path}")
+                Clock.schedule_once(lambda dt: self.models_dropdown_setter())
             else:
                 Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
         except requests.exceptions.RequestException as e:
             print(f"Error downloading the onnx file: {e} 😞")
             Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
         self.is_downloading = False
+        self.to_download_model = "na"
+
+    def initiate_model_download(self, instance, callback=None):
+        self.txt_dialog_closer(instance)
+        #debug
+        print(f"model: {self.model_url}, model_json: {self.model_json_url}")
+        if self.to_download_model == "na":
+            return
+        model_json_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx.json")
+        model_full_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx")
+        dwnl_model_json_stat = self.download_other_files(self.model_json_url, model_json_path)
+        if dwnl_model_json_stat:
+            self.download_progress = MDLabel(
+                text = "Starting download process...",
+                font_style = "Subtitle1",
+                halign = 'left',
+                adaptive_height = True,
+                #theme_text_color = "Custom",
+                #text_color = "#f7f7f5"
+            )
+            self.chat_history_id.add_widget(self.download_progress)
+            self.download_model_file(self.model_url, model_full_path)
+
+    def download_model_file(self, model_url, download_path, instance=None):
+        #self.txt_dialog_closer(instance)
+        filename = download_path.split("/")[-1]
+        print(f"Starting the download for: {filename}")
+        threading.Thread(target=self.download_file, args=(model_url, download_path), daemon=True).start()
 
     def popup_download_model(self):
         buttons = [
@@ -629,13 +699,46 @@ class DlTtsSttApp(MDApp):
             buttons
         )
 
-    def download_voices(self):
-        print("Download called")
-        voice_json_present = os.path.exists(self.voices_json)
-        if voice_json_present:
+    def download_menu_callback(self, item):
+        self.download_menu.dismiss()
+        self.to_download_model = item
+        voice_files = self.voices_obj[item]["files"]
+        for file in voice_files:
+            if file.endswith(".onnx"):
+                self.model_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{file}?download=true"
+                model_file_size = int(voice_files[file]["size_bytes"])
+                model_file_size = int(model_file_size/1000000)
+                self.model_file_size = f"Download size is ~ {model_file_size} MB"
+            if file.endswith(".onnx.json"):
+                self.model_json_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{file}?download=true"
+        self.popup_download_model()
+
+    def download_voices(self, instance=None):
+        caller = self.root.ids.settings_scroll.ids.settings_list
+        if os.path.exists(self.voices_json):
             print("Need to trigger the popup menu")
+            import json
+            self.piper_voice_list = []
+            with open(self.voices_json, "r") as f:
+                self.voices_obj = json.load(f)
+            for voice in self.voices_obj:
+                self.piper_voice_list.append(voice)
+            menu_items = [
+                {
+                    "text": voice,
+                    #"leading_icon": "speaker-message",
+                    "on_release": lambda x=voice: self.download_menu_callback(x),
+                    "font_size": sp(24)
+                } for voice in self.piper_voice_list
+            ]
+            self.download_menu = MDDropdownMenu(
+                items=menu_items,
+                caller=caller,
+            )
+            self.download_menu.open()
         else:
             print("Need to download the voices.json from HF")
+            threading.Thread(target=self.sync_piper_voices, args=(True,), daemon=True).start()
 
     def delete_voices(self):
         self.show_toast_msg(f"Delete piper voices triggered", is_error=True)

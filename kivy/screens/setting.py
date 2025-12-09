@@ -15,7 +15,7 @@ Builder.load_string('''
 
 <DownloadPiperVoice>:
     text: "Download voices"
-    on_release: app.download_voices()
+    on_release: app.download_voices(self)
     IconLeftWidget:
         icon: "download"
 
