@@ -604,8 +604,13 @@ class DlTtsSttApp(MDApp):
             self.tmp_wait = TempSpinWait()
             self.tmp_wait.text = "Generating the audio, please wait..."
             self.chat_history_id.add_widget(self.tmp_wait)
-            tts_thread = threading.Thread(target=self.piper.transcribe, args=(user_message, self.msg_id, self.tts_api_callback), daemon=True)
-            tts_thread.start()
+            if platform == "android":
+                # android call needs to be synchronous for java class access
+                tts_status = self.piper.transcribe(message=user_message, filename=self.msg_id)
+                self.tts_api_callback(tts_status)
+            else:
+                tts_thread = threading.Thread(target=self.piper.transcribe, args=(user_message, self.msg_id, self.tts_api_callback), daemon=True)
+                tts_thread.start()
 
     def download_other_files(self, url, path):
         status = False
