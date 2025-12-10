@@ -5,18 +5,16 @@ a = Analysis(
     ['main.py'],
     pathex=['.'],
     binaries=[],
-    datas=collect_data_files('kivy') + # add all paths which are required
-    [
+    datas=[ #collect_data_files('kivy') + # add all paths which are required
         ('data', 'data'),
-        ('models', 'models'),
         ('screens', 'screens'),
         ('main_layout.kv', '.')
     ],
     hiddenimports=[
         "kivymd.uix.screen",
         "kivymd.uix.bottomnavigation",
-        "kivy.parser",
-        "screens.tts",
+        "kivymd.icon_definitions",
+        "piper",
     ],
     hookspath=[],
     hooksconfig={},
@@ -34,7 +32,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='dlTTS-v0.0.1',
+    name='dlTTS-v0.3.0',
     icon='data/images/favicon.ico',
     debug=False,
     bootloader_ignore_signals=False,

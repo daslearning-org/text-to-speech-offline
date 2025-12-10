@@ -9,13 +9,25 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty, NumericProperty
 from kivy.metrics import dp, sp
 
+# get path details
+import sys
+import os
+if getattr(sys, 'frozen', False):
+    # Running as a PyInstaller bundle
+    base_path = sys._MEIPASS
+    noto_font = os.path.join(base_path, "data/fonts/NotoSans-Merged.ttf")
+else:
+    # Running in a normal Python environment
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    noto_font = os.path.abspath(os.path.join(base_path, "..", "data/fonts/NotoSans-Merged.ttf"))
+
 Builder.load_string('''
 #:import parse_color kivy.parser.parse_color
 
 <UsrMsg>:
     mode: "fill"
     readonly: True
-    font_name: 'data/fonts/NotoSans-Merged.ttf'
+    font_name: root.noto_path
     multiline: True
     max_height: "200dp"
     size_hint_x: 0.7
@@ -46,7 +58,7 @@ Builder.load_string('''
 <MultiLingualTextField>:
     hint_text: "Type your text..."
     mode: "rectangle"
-    font_name: 'data/fonts/NotoSans-Merged.ttf'
+    font_name: root.noto_path
     multiline: True
     max_height: "200dp"
     input_type: 'text'
@@ -113,12 +125,18 @@ class TtsResp(MDBoxLayout):
     id = StringProperty("")
 
 class MultiLingualTextField(MDTextField):
-    pass
+    noto_path = StringProperty()
+    def __init__(self, noto=noto_font, **kwargs):
+        super().__init__(**kwargs)
+        self.noto_path = noto
 
 class UsrMsg(MDTextField): # originally MDLabel
     id = StringProperty("")
     text = StringProperty("")
-    #font_style = "Subtitle1"
+    noto_path = StringProperty()
+    def __init__(self, noto=noto_font, **kwargs):
+        super().__init__(**kwargs)
+        self.noto_path = noto
 
 class TtsBox(MDBoxLayout):
     def __init__(self, **kwargs):
