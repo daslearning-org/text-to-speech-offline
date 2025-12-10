@@ -857,6 +857,8 @@ class DlTtsSttApp(MDApp):
         self.show_toast_msg("Executed the audio cleanup!")
         self.txt_dialog_closer(instance)
         self.chat_history_id.clear_widgets()
+        self.root.ids.nav_tts.badge_icon = "numeric-0"
+        self.message_counter = 1000 # reset the initial id
 
     def open_link(self, instance, url):
         import webbrowser
