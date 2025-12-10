@@ -1,6 +1,7 @@
 # screens/tts.py
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
+from kivymd.uix.spinner import MDSpinner
 from kivymd.uix.button import MDFillRoundFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.scrollview import MDScrollView
@@ -23,6 +24,24 @@ else:
 
 Builder.load_string('''
 #:import parse_color kivy.parser.parse_color
+
+<TempSpinWait>:
+    id: temp_spin
+    orientation: 'horizontal'
+    adaptive_height: True
+    padding: dp(8)
+
+    MDLabel:
+        text: root.text
+        font_style: "Subtitle1"
+        adaptive_width: True
+        theme_text_color: "Custom"
+        text_color: "#f7f7f5"
+
+    MDSpinner:
+        size_hint: None, None
+        size: dp(14), dp(14)
+        active: True
 
 <UsrMsg>:
     mode: "fill"
@@ -120,6 +139,11 @@ Builder.load_string('''
             icon_color: app.theme_cls.primary_color
             on_release: app.send_message(self, chat_input, chat_history_id)
 ''')
+
+class TempSpinWait(MDBoxLayout):
+    text = StringProperty("")
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 class TtsResp(MDBoxLayout):
     id = StringProperty("")

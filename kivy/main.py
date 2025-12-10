@@ -641,7 +641,7 @@ class DlTtsSttApp(MDApp):
                             downloaded += len(chunk)
                             Clock.schedule_once(lambda dt: self.update_download_progress(downloaded, total_size))
             if os.path.exists(download_path):
-                print(f"Model {filename}, is downloaded at {download_path}")
+                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Downloaded: {filename}"))
                 Clock.schedule_once(lambda dt: self.models_dropdown_setter())
             else:
                 Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
@@ -657,7 +657,6 @@ class DlTtsSttApp(MDApp):
             self.download_progress.dismiss()
 
     def initiate_model_download(self, instance, callback=None):
-        self.txt_dialog_closer(None)
         #debug print(f"model: {self.model_url}, model_json: {self.model_json_url}")
         if self.to_download_model == "na":
             return
@@ -674,7 +673,7 @@ class DlTtsSttApp(MDApp):
             self.download_model_file(self.model_url, model_full_path)
 
     def download_model_file(self, model_url, download_path, instance=None):
-        #self.txt_dialog_closer(instance)
+        self.txt_dialog_closer(instance)
         filename = download_path.split("/")[-1]
         print(f"Starting the download for: {filename}")
         threading.Thread(target=self.download_file, args=(model_url, download_path), daemon=True).start()
