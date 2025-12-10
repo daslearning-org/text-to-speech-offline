@@ -1,6 +1,6 @@
 from jnius import PythonJavaClass, java_method, autoclass, cast
 from plyer.platforms.android import activity
-from kivy.clock import Clock
+#from kivy.clock import Clock
 import os
 import sys
 from threading import Event
@@ -111,24 +111,13 @@ class PiperTts:
             result = self.tts.synthesizeToFile(java_msg, bundle, file_obj, java_utteranceId)
             if result != TextToSpeech.SUCCESS:
                 print("Failed to start TTS synthesis")
-                if callback:
-                    Clock.schedule_once(lambda dt: callback(status))
-                    return
-                else:
-                    return status
+                return status
         except Exception as e:
             print(f"transcribe error: {e}")
-            if callback:
-                Clock.schedule_once(lambda dt: callback(status))
-                return
-            else:
-                return status
+            return status
         event.wait()
         status = True
-        if callback:
-            Clock.schedule_once(lambda dt: callback(status))
-        else:
-            return status
+        return status
 
     def models_list(self):
         all_models = []
