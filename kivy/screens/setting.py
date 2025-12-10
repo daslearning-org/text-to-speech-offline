@@ -50,7 +50,7 @@ Builder.load_string('''
                 MDList:
                     id: settings_list
                     OneLineIconListItem:
-                        text: "Delete old audio files(s)"
+                        text: "Delete all audio files"
                         on_release: app.show_delete_alert()
                         IconLeftWidget:
                             icon: "broom"

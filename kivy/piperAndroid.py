@@ -1,5 +1,6 @@
 from jnius import PythonJavaClass, java_method, autoclass, cast
 from plyer.platforms.android import activity
+from kivy.clock import Clock
 import os
 import sys
 from threading import Event
@@ -90,7 +91,7 @@ class PiperTts:
             print(f"Failed to set voice '{model_name}' with error: {e}")
             return True
 
-    def transcribe(self, message: str, filename: str):
+    def transcribe(self, message: str, filename: str, callback=None):
         event = Event()
         callback = MyTTSCallback(event)
         pyListener = PyTTSListener()
@@ -98,7 +99,7 @@ class PiperTts:
         self.tts.setOnUtteranceProgressListener(pyListener)
         full_save_path = os.path.join(self.save_dir, f"{filename}.wav")
         file_obj = File(full_save_path) # java file object where the wav will be saved
-
+        status = False
         try:
             # Convert Python str to Java String (implements CharSequence)
             java_msg = JavaString(message)
@@ -109,13 +110,25 @@ class PiperTts:
             # Synthesize to file
             result = self.tts.synthesizeToFile(java_msg, bundle, file_obj, java_utteranceId)
             if result != TextToSpeech.SUCCESS:
-                return "Failed to start TTS synthesis"
+                print("Failed to start TTS synthesis")
+                if callback:
+                    Clock.schedule_once(lambda dt: callback(status))
+                    return
+                else:
+                    return status
         except Exception as e:
             print(f"transcribe error: {e}")
-            return f"transcribe error: {e}"
-
+            if callback:
+                Clock.schedule_once(lambda dt: callback(status))
+                return
+            else:
+                return status
         event.wait()
-        return f"audio saved at: {full_save_path}" # success & wait is complete
+        status = True
+        if callback:
+            Clock.schedule_once(lambda dt: callback(status))
+        else:
+            return status
 
     def models_list(self):
         all_models = []

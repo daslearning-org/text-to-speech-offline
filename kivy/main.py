@@ -33,7 +33,7 @@ from kivy.clock import Clock
 Window.softinput_mode = "below_target"
 
 # Import your local screen classes & modules
-from screens.tts import TtsBox, UsrMsg, TtsResp
+from screens.tts import TtsBox, UsrMsg, TtsResp, TempSpinWait
 from screens.setting import SettingsBox, DemoPiperLink, DownloadPiperVoice, DeletePiperVoice
 
 ## OS specific imports
@@ -532,7 +532,7 @@ class DlTtsSttApp(MDApp):
         self.manager_open = False
         self.tts_file_saver.close()
 
-    def add_tts_msg(self, chat_history_widget, id_to_set):
+    def add_tts_msg(self, id_to_set):
         play_pause_btn = MDIconButton(
             id = f"{id_to_set}_pl",
             icon = "play-circle", #pause-circle to be added
@@ -575,27 +575,37 @@ class DlTtsSttApp(MDApp):
         tts_resp.add_widget(play_pause_btn)
         tts_resp.add_widget(stop_btn)
         tts_resp.add_widget(download_button)
-        chat_history_widget.add_widget(tts_resp)
+        self.chat_history_id.add_widget(tts_resp)
 
-    def add_usr_message(self, msg_to_add, chat_history_widget):
-        chat_history_widget.add_widget(UsrMsg(text=msg_to_add))
+    def add_usr_message(self, msg_to_add):
+        self.chat_history_id.add_widget(UsrMsg(text=msg_to_add))
 
-    def send_message(self, button_instance, chat_input_widget, chat_history_widget):
+    def tts_api_callback(self, status):
+        self.chat_history_id.remove_widget(self.tmp_wait)
+        if status:
+            self.add_tts_msg(self.msg_id)
+            self.message_counter += 1
+            self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+            full_audio_path = os.path.join(self.tts_audio_dir, f"{self.msg_id}.wav")
+            self.show_toast_msg(f"Audio generated at: {full_audio_path}", duration=2)
+        else:
+            self.show_toast_msg("Failed to generate audio!", is_error=True)
+
+    def send_message(self, button_instance, chat_input_widget):
         if self.selected_tts_model in ["", "download-voice", "no-android-voice", "select-model"]:
             self.show_toast_msg("You need to choose a working model first!", is_error=True)
             return
         user_message = chat_input_widget.text.strip()
         #print(user_message)
         if user_message:
-            # generate a msg id here
-            self.message_counter += 1
-            msg_id = f"{self.new_session_id}_{self.message_counter}"
-            self.add_usr_message(user_message, chat_history_widget)
+            self.msg_id = f"{self.new_session_id}_{self.message_counter}"
+            self.add_usr_message(user_message)
             chat_input_widget.text = ""
-            tts_status = self.piper.transcribe(message=user_message, filename=msg_id)
-            self.add_tts_msg(chat_history_widget, msg_id)
-            self.show_toast_msg(tts_status)
-            self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+            self.tmp_wait = TempSpinWait()
+            self.tmp_wait.text = "Generating the audio, please wait..."
+            self.chat_history_id.add_widget(self.tmp_wait)
+            tts_thread = threading.Thread(target=self.piper.transcribe, args=(user_message, self.msg_id, self.tts_api_callback), daemon=True)
+            tts_thread.start()
 
     def download_other_files(self, url, path):
         status = False
@@ -841,6 +851,7 @@ class DlTtsSttApp(MDApp):
                     print(f"Could not delete the audion files, error: {e}")
         self.show_toast_msg("Executed the audio cleanup!")
         self.txt_dialog_closer(instance)
+        self.chat_history_id.clear_widgets()
 
     def open_link(self, instance, url):
         import webbrowser

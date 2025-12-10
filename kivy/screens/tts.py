@@ -35,8 +35,8 @@ Builder.load_string('''
         text: root.text
         font_style: "Subtitle1"
         adaptive_width: True
-        theme_text_color: "Custom"
-        text_color: "#f7f7f5"
+        #theme_text_color: "Custom"
+        #text_color: "#f7f7f5"
 
     MDSpinner:
         size_hint: None, None
@@ -137,7 +137,7 @@ Builder.load_string('''
             pos_hint: {'center_y': 0.5}
             theme_icon_color: "Custom"
             icon_color: app.theme_cls.primary_color
-            on_release: app.send_message(self, chat_input, chat_history_id)
+            on_release: app.send_message(self, chat_input)
 ''')
 
 class TempSpinWait(MDBoxLayout):

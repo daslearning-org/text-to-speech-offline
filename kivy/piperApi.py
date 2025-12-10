@@ -1,4 +1,5 @@
 from piper.voice import PiperVoice
+from kivy.clock import Clock
 import os
 import sys
 import wave
@@ -30,7 +31,8 @@ class PiperTts:
             print(f"Error loading piper model: {e}")
             return False
 
-    def transcribe(self, message: str, filename: str):
+    def transcribe(self, message: str, filename: str, callback=None):
+        status = False
         full_save_path = os.path.join(self.save_dir, f"{filename}.wav")
         with wave.open(full_save_path, 'wb') as file:
             file.setnchannels(1)
@@ -38,10 +40,13 @@ class PiperTts:
             file.setframerate(self.voice.config.sample_rate)
             try:
                 self.voice.synthesize_wav(message, file)
-                return f"audio saved at: {full_save_path}"
+                status = True
             except Exception as e:
                 print(f"Error during transcribe: {e}")
-                return f"Error during transcribe: {e}"
+        if callback:
+            Clock.schedule_once(lambda dt: callback(status))
+        else:
+            return status
 
     def models_list(self):
         all_models = []
