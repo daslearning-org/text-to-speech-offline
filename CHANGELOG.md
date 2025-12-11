@@ -7,6 +7,7 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 
 ### v0.3.0
 - Changing the initial voice selection method.
+- Now clearing the main screen after all audio deletion from Settings.
 - Adding desktop app & dekstop voice models can be downloaded from settings.
 - The desktop voices can also be deleted from settings.
 

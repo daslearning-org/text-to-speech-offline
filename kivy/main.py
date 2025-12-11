@@ -235,7 +235,7 @@ class MainScreenBox(MDBoxLayout):
                 self.bottom_pad = 48
 
 # The KivyMD app
-class DlTtsSttApp(MDApp):
+class DlTTSApp(MDApp):
     title = "DasLearning TTS & STT"
     message_counter = NumericProperty(1000)
     selected_tts_model = StringProperty("")
@@ -845,7 +845,6 @@ class DlTtsSttApp(MDApp):
         )
 
     def delete_tts_action(self, instance):
-        # Custom function called when DISCARD is clicked
         for filename in os.listdir(self.tts_audio_dir):
             if filename.endswith(".wav"):
                 file_path = os.path.join(self.tts_audio_dir, filename)
@@ -890,4 +889,4 @@ class DlTtsSttApp(MDApp):
         )
 
 if __name__ == '__main__':
-    DlTtsSttApp().run()
+    DlTTSApp().run()
