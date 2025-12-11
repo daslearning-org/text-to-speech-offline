@@ -13,6 +13,24 @@ from kivy.parser import parse_color
 
 Builder.load_string('''
 
+<DownloadPiperVoice>:
+    text: "Download voice models"
+    on_release: app.download_voices(self)
+    IconLeftWidget:
+        icon: "download"
+
+<DeletePiperVoice>:
+    text: "Delete voice models"
+    on_release: app.delete_voices()
+    IconLeftWidget:
+        icon: "delete"
+
+<DemoPiperLink>:
+    text: "Check the demo voices"
+    on_release: app.open_link(self, "https://rhasspy.github.io/piper-samples/")
+    IconLeftWidget:
+        icon: "music"
+
 <SettingsBox@MDBoxLayout>:
 
     Accordion:
@@ -30,8 +48,9 @@ Builder.load_string('''
 
             MDScrollView:
                 MDList:
+                    id: settings_list
                     OneLineIconListItem:
-                        text: "Clean audio files from default location"
+                        text: "Delete all audio files"
                         on_release: app.show_delete_alert()
                         IconLeftWidget:
                             icon: "broom"
@@ -48,6 +67,7 @@ Builder.load_string('''
 
             MDScrollView:
                 MDList:
+                    id: support_list
                     OneLineIconListItem:
                         text: "Demo (How to use)"
                         on_release: app.open_link(self, "https://youtu.be/AhcjJu2YwUE")
@@ -73,3 +93,12 @@ Builder.load_string('''
 
 class SettingsBox(MDBoxLayout):
     """ The main settings box which contains the setting, help & other required sections """
+
+class DownloadPiperVoice(OneLineIconListItem):
+    """ Download the Piper-TTS voices for Desktop only """
+
+class DeletePiperVoice(OneLineIconListItem):
+    """ Delete the Piper-TTS voices for Desktop only """
+
+class DemoPiperLink(OneLineIconListItem):
+    """ Check demo Piper-TTS voices for Desktop only """

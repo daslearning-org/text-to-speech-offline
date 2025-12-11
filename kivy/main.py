@@ -7,6 +7,7 @@ import string
 import threading
 import queue
 import shutil
+import requests
 
 # kivy world
 from kivymd.app import MDApp
@@ -24,6 +25,7 @@ from kivy.core.window import Window
 from kivy.metrics import dp, sp
 from kivy.utils import platform
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.clock import Clock
 
 # Other public modules
 
@@ -31,8 +33,8 @@ from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 Window.softinput_mode = "below_target"
 
 # Import your local screen classes & modules
-from screens.tts import TtsBox, UsrMsg, TtsResp
-from screens.setting import SettingsBox
+from screens.tts import TtsBox, UsrMsg, TtsResp, TempSpinWait
+from screens.setting import SettingsBox, DemoPiperLink, DownloadPiperVoice, DeletePiperVoice
 
 ## OS specific imports
 if platform == "android":
@@ -43,7 +45,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -233,7 +235,7 @@ class MainScreenBox(MDBoxLayout):
                 self.bottom_pad = 48
 
 # The KivyMD app
-class DlTtsSttApp(MDApp):
+class DlTTSApp(MDApp):
     title = "DasLearning TTS & STT"
     message_counter = NumericProperty(1000)
     selected_tts_model = StringProperty("")
@@ -253,40 +255,67 @@ class DlTtsSttApp(MDApp):
     def build(self):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.accent_palette = "Orange"
-
+        self.is_downloading = False
         characters = string.ascii_lowercase + string.digits
         self.new_session_id = ''.join(random.choice(characters) for _ in range(6))
-
         return Builder.load_file(kv_file_path)
 
     def on_start(self):
-        #print(self.root.ids)
         global save_path
+        file_m_height = 1
+        settings_list = self.root.ids.settings_scroll.ids.settings_list
+        support_list = self.root.ids.settings_scroll.ids.support_list
         # request write permission on Android
         if platform == "android":
             from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE
-            ])
+            sdk_version = 30
+            file_m_height = 0.9
+            try:
+                VERSION = autoclass('android.os.Build$VERSION')
+                sdk_version = VERSION.SDK_INT
+                print(f"Android SDK: {sdk_version}")
+            except Exception as e:
+                print(f"Could not check the android SDK version: {e}")
+            if sdk_version >= 33:  # Android 13+
+                permissions = [Permission.READ_MEDIA_AUDIO]
+            elif sdk_version >= 30: # Android 11-12
+                permissions = [Permission.READ_EXTERNAL_STORAGE]
+            else:
+                permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+            request_permissions(permissions)
             context = autoclass('org.kivy.android.PythonActivity').mActivity
             android_path = context.getExternalFilesDir(None).getAbsolutePath()
             self.tts_audio_dir = os.path.join(android_path, 'generated')
+            self.model_path = os.path.join(android_path, 'models')
             self.audio_thread = threading.Thread(target=pyjnuis_audio_player, daemon=True)
         else:
             self.audio_thread = threading.Thread(target=audio_player_thread, daemon=True)
             self.tts_audio_dir = os.path.join(self.user_data_dir, 'generated')
+            self.model_path = os.path.join(self.user_data_dir, 'models')
+            self.desktop_voice = []
+            demo_voices = DemoPiperLink()
+            download_piper = DownloadPiperVoice()
+            delete_piper = DeletePiperVoice()
+            support_list.add_widget(demo_voices)
+            settings_list.add_widget(download_piper)
+            settings_list.add_widget(delete_piper)
+            self.to_download_model = "na"
+        self.chat_history_id = self.root.ids.tts_screen.ids.chat_history_id
         print(f"Application data directory: {self.user_data_dir}")
         # create the paths
         os.makedirs(self.tts_audio_dir, exist_ok=True)
+        os.makedirs(self.model_path, exist_ok=True)
         save_path = self.tts_audio_dir
         print(f"Generated audio will be saved in: {self.tts_audio_dir}")
+        self.voices_json = os.path.join(self.model_path, 'voices.json')
         # tts file saver using filemanager
         self.manager_open = False
         self.tts_file_saver = MDFileManager(
             exit_manager=self.tts_exit_manager,
             select_path=self.select_tts_path,
             selector="folder",  # Restrict to selecting directories only
+            size_hint_y = file_m_height, #0.9 for andoird cut out problem
+            #pos_hint = {'center_y': 0.8}
         )
         # audio threads
         self.audio_thread.start()
@@ -295,13 +324,13 @@ class DlTtsSttApp(MDApp):
         self.kv_play_thread.start()
         # voice models menu
         model_menu = self.root.ids.tts_screen.ids.model_menu
-        self.piper = PiperTts(save_dir=self.tts_audio_dir)
+        self.piper = PiperTts(save_dir=self.tts_audio_dir, model_path=self.model_path)
         tts_models = self.piper.models_list()
         tts_models.sort() # list all languages in ascending order
         menu_items = [
             {
                 "text": f"{model_name}",
-                "leading_icon": "robot-happy",
+                "leading_icon": "speaker-message",
                 "on_release": lambda x=f"{model_name}": self.menu_callback(x, model_menu),
                 "font_size": sp(24)
             } for model_name in tts_models
@@ -312,11 +341,53 @@ class DlTtsSttApp(MDApp):
             items=menu_items,
         )
         if len(tts_models) >= 1:
-            self.selected_tts_model = tts_models[0]
+            self.selected_tts_model = "select-model"
+            if platform == "android":
+                text_item = "en-US-language"
+                set_stat = self.piper.set_model(model_name=text_item)
+                if set_stat:
+                    self.selected_tts_model = text_item
+                    model_menu.text = self.selected_tts_model
+                    self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+                else:
+                    self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
+            else:
+                text_item = tts_models[0]
+                set_stat = self.piper.set_model(model_name=text_item)
+                if set_stat:
+                    self.selected_tts_model = text_item
+                    model_menu.text = self.selected_tts_model
+                    self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+                else:
+                    self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
         else:
-            self.selected_tts_model = "no-android-voice"
+            if platform == "android":
+                self.selected_tts_model = "no-android-voice"
+            else:
+                self.selected_tts_model = "download-voice"
         model_menu.text = self.selected_tts_model
         print("Init success...")
+
+    def models_dropdown_setter(self):
+        model_menu = self.root.ids.tts_screen.ids.model_menu
+        tts_models = self.piper.models_list()
+        tts_models.sort() # list all languages in ascending order
+        menu_items = [
+            {
+                "text": f"{model_name}",
+                "leading_icon": "speaker-message",
+                "on_release": lambda x=f"{model_name}": self.menu_callback(x, model_menu),
+                "font_size": sp(24)
+            } for model_name in tts_models
+        ]
+        self.menu = MDDropdownMenu(
+            md_bg_color="#bdc6b0",
+            caller=model_menu,
+            items=menu_items,
+        )
+        if len(tts_models) >= 1 and self.selected_tts_model == "download-voice":
+            model_menu.text = "select-model"
+        threading.Thread(target=self.sync_piper_voices, args=(False,), daemon=True).start()
 
     def kv_player_thread(self):
         # Updates the spinner
@@ -356,11 +427,15 @@ class DlTtsSttApp(MDApp):
 
     def menu_callback(self, text_item, model_menu):
         self.menu.dismiss()
-        self.selected_tts_model = text_item
-        self.piper = PiperTts(save_dir=self.tts_audio_dir, model_name=self.selected_tts_model)
-        model_menu.text = self.selected_tts_model
+        set_stat = self.piper.set_model(model_name=text_item)
+        if set_stat:
+            self.selected_tts_model = text_item
+            model_menu.text = self.selected_tts_model
+            self.show_toast_msg(f"Voice is set to: {text_item}, you can now generate speech.")
+        else:
+            self.show_toast_msg(f"Error while setting up the voice: {text_item}, you may try with other voice model", is_error=True)
 
-    def show_toast_msg(self, message, is_error=False):
+    def show_toast_msg(self, message, is_error=False, duration=3):
         from kivymd.uix.snackbar import MDSnackbar
         bg_color = (0.2, 0.6, 0.2, 1) if not is_error else (0.8, 0.2, 0.2, 1)
         MDSnackbar(
@@ -369,9 +444,9 @@ class DlTtsSttApp(MDApp):
                 font_style = "Subtitle1" # change size for android
             ),
             md_bg_color=bg_color,
-            y=dp(24),
+            y=dp(64),
             pos_hint={"center_x": 0.5},
-            duration=3
+            duration=duration
         ).open()
 
     def show_text_dialog(self, title, text="", buttons=[]):
@@ -406,7 +481,7 @@ class DlTtsSttApp(MDApp):
             if self.manager_open:
                 # Check if we are at the root of the directory tree
                 if self.tts_file_saver.current_path == self.external_storage:
-                    self.show_toast_msg(f"Closing file manager from main storage")
+                    self.show_toast_msg("Closing file manager")
                     self.tts_exit_manager()
                 else:
                     self.tts_file_saver.back()  # Navigate back within file manager
@@ -457,7 +532,7 @@ class DlTtsSttApp(MDApp):
         self.manager_open = False
         self.tts_file_saver.close()
 
-    def add_tts_msg(self, chat_history_widget, id_to_set):
+    def add_tts_msg(self, id_to_set):
         play_pause_btn = MDIconButton(
             id = f"{id_to_set}_pl",
             icon = "play-circle", #pause-circle to be added
@@ -500,24 +575,250 @@ class DlTtsSttApp(MDApp):
         tts_resp.add_widget(play_pause_btn)
         tts_resp.add_widget(stop_btn)
         tts_resp.add_widget(download_button)
-        chat_history_widget.add_widget(tts_resp)
+        self.chat_history_id.add_widget(tts_resp)
 
-    def add_usr_message(self, msg_to_add, chat_history_widget):
-        chat_history_widget.add_widget(UsrMsg(text=msg_to_add))
+    def add_usr_message(self, msg_to_add):
+        self.chat_history_id.add_widget(UsrMsg(text=msg_to_add))
 
-    def send_message(self, button_instance, chat_input_widget, chat_history_widget):
+    def tts_api_callback(self, status):
+        self.chat_history_id.remove_widget(self.tmp_wait)
+        if status:
+            self.add_tts_msg(self.msg_id)
+            self.message_counter += 1
+            self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+            full_audio_path = os.path.join(self.tts_audio_dir, f"{self.msg_id}.wav")
+            self.show_toast_msg(f"Audio generated at: {full_audio_path}", duration=2)
+        else:
+            self.show_toast_msg("Failed to generate audio!", is_error=True)
+
+    def send_message(self, button_instance, chat_input_widget):
+        if self.selected_tts_model in ["", "download-voice", "no-android-voice", "select-model"]:
+            self.show_toast_msg("You need to choose a working model first!", is_error=True)
+            return
         user_message = chat_input_widget.text.strip()
         #print(user_message)
         if user_message:
-            # generate a msg id here
-            self.message_counter += 1
-            msg_id = f"{self.new_session_id}_{self.message_counter}"
-            self.add_usr_message(user_message, chat_history_widget)
+            self.msg_id = f"{self.new_session_id}_{self.message_counter}"
+            self.add_usr_message(user_message)
             chat_input_widget.text = ""
-            tts_status = self.piper.transcribe(message=user_message, filename=msg_id)
-            self.add_tts_msg(chat_history_widget, msg_id)
-            self.show_toast_msg(tts_status)
-            self.root.ids.nav_tts.badge_icon = f"numeric-{self.message_counter - 1000}"
+            self.tmp_wait = TempSpinWait()
+            self.tmp_wait.text = "Generating the audio, please wait..."
+            self.chat_history_id.add_widget(self.tmp_wait)
+            if platform == "android":
+                # android call needs to be synchronous for java class access
+                tts_status = self.piper.transcribe(message=user_message, filename=self.msg_id)
+                self.tts_api_callback(tts_status)
+            else:
+                tts_thread = threading.Thread(target=self.piper.transcribe, args=(user_message, self.msg_id, self.tts_api_callback), daemon=True)
+                tts_thread.start()
+
+    def download_other_files(self, url, path):
+        status = False
+        try:
+            with requests.get(url, stream=True) as req:
+                req.raise_for_status()
+                with open(path, 'wb') as f:
+                    for chunk in req.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+            if os.path.exists(path):
+                status = True
+        except Exception as e:
+            print(f"Cannot voices json from HF: {e}")
+        return status
+
+    def sync_piper_voices(self, callback=False):
+        voice_url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/voices.json?download=true"
+        download_stat = self.download_other_files(voice_url, self.voices_json)
+        if download_stat and callback:
+            Clock.schedule_once(lambda dt: self.download_voices())
+
+    def update_download_progress(self, downloaded, total_size):
+        if total_size > 0:
+            percentage = (downloaded / total_size) * 100
+            self.download_progress.text = f"Progress: {percentage:.1f}%"
+        else:
+            self.download_progress.text = f"Progress: {downloaded} bytes"
+
+    def download_file(self, download_url, download_path):
+        filename = download_url.split("/")[-1]
+        filename = filename.replace("?download=true", "")
+        try:
+            self.is_downloading = filename
+            with requests.get(download_url, stream=True) as req:
+                req.raise_for_status()
+                total_size = int(req.headers.get('content-length', 0))
+                downloaded = 0
+                with open(download_path, 'wb') as f:
+                    for chunk in req.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            Clock.schedule_once(lambda dt: self.update_download_progress(downloaded, total_size))
+            if os.path.exists(download_path):
+                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Downloaded: {filename}"))
+                Clock.schedule_once(lambda dt: self.models_dropdown_setter())
+            else:
+                Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading the onnx file: {e} 😞")
+            Clock.schedule_once(lambda dt: self.show_toast_msg(f"Download failed for: {filename}", is_error=True))
+        self.is_downloading = False
+        self.to_download_model = "na"
+        Clock.schedule_once(lambda dt: self.download_stat_close())
+
+    def download_stat_close(self):
+        if self.download_progress:
+            self.download_progress.dismiss()
+
+    def initiate_model_download(self, instance, callback=None):
+        #debug print(f"model: {self.model_url}, model_json: {self.model_json_url}")
+        if self.to_download_model == "na":
+            return
+        model_json_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx.json")
+        model_full_path = os.path.join(self.model_path, f"{self.to_download_model}.onnx")
+        dwnl_model_json_stat = self.download_other_files(self.model_json_url, model_json_path)
+        if dwnl_model_json_stat:
+            self.download_progress = MDDialog(
+                title=f"Downloading {self.to_download_model}",
+                text="Starting download process...",
+                #buttons=buttons
+            )
+            self.download_progress.open()
+            self.download_model_file(self.model_url, model_full_path)
+
+    def download_model_file(self, model_url, download_path, instance=None):
+        self.txt_dialog_closer(instance)
+        filename = download_path.split("/")[-1]
+        print(f"Starting the download for: {filename}")
+        threading.Thread(target=self.download_file, args=(model_url, download_path), daemon=True).start()
+
+    def popup_download_model(self):
+        buttons = [
+            MDFlatButton(
+                text="Cancel",
+                theme_text_color="Custom",
+                text_color=self.theme_cls.primary_color,
+                on_release=self.txt_dialog_closer
+            ),
+            MDFlatButton(
+                text="Ok",
+                theme_text_color="Custom",
+                text_color="green",
+                on_release=self.initiate_model_download
+            ),
+        ]
+        self.show_text_dialog(
+            "Downlaod the model file",
+            self.model_file_size,
+            buttons
+        )
+
+    def download_menu_callback(self, item):
+        self.download_menu.dismiss()
+        self.to_download_model = item
+        voice_files = self.voices_obj[item]["files"]
+        for file in voice_files:
+            if file.endswith(".onnx"):
+                self.model_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{file}?download=true"
+                model_file_size = int(voice_files[file]["size_bytes"])
+                model_file_size = int(model_file_size/1000000)
+                self.model_file_size = f"Download size is ~ {model_file_size} MB"
+            if file.endswith(".onnx.json"):
+                self.model_json_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{file}?download=true"
+        self.popup_download_model()
+
+    def download_voices(self, instance=None):
+        if self.is_downloading:
+            self.show_toast_msg(f"Please wait for the {self.is_downloading} download to finish!", is_error=True)
+            return
+        caller = self.root.ids.settings_scroll.ids.settings_list
+        if os.path.exists(self.voices_json):
+            print("Need to trigger the popup menu")
+            import json
+            piper_voice_list = []
+            with open(self.voices_json, "r", encoding="utf-8") as f:
+                self.voices_obj = json.load(f)
+            for voice in self.voices_obj:
+                model_full_path = os.path.join(self.model_path, f"{voice}.onnx")
+                if not os.path.exists(model_full_path):
+                    piper_voice_list.append(voice)
+            menu_items = [
+                {
+                    "text": voice,
+                    #"leading_icon": "speaker-message",
+                    "on_release": lambda x=voice: self.download_menu_callback(x),
+                    "font_size": sp(24)
+                } for voice in piper_voice_list
+            ]
+            self.download_menu = MDDropdownMenu(
+                items=menu_items,
+                caller=caller,
+            )
+            self.download_menu.open()
+        else:
+            print("Need to download the voices.json from HF")
+            threading.Thread(target=self.sync_piper_voices, args=(True,), daemon=True).start()
+
+    def delete_voice_action(self, instance):
+        self.txt_dialog_closer(instance)
+        full_model_path = os.path.join(self.model_path, f"{self.delete_voice_name}.onnx")
+        model_config_path = os.path.join(self.model_path, f"{self.delete_voice_name}.onnx.json")
+        try:
+            os.remove(full_model_path)
+            os.remove(model_config_path)
+            self.show_toast_msg(f"Deleted model: {self.delete_voice_name}!")
+            Clock.schedule_once(lambda dt: self.models_dropdown_setter())
+        except Exception as e:
+            print("Error during model deletion: {e}")
+            self.show_toast_msg(f"Couldn't delete model: {self.delete_voice_name}")
+
+    def delete_menu_callback(self, item):
+        self.delete_menu.dismiss()
+        if self.selected_tts_model == item:
+            self.show_toast_msg(f"Cannot delete {item} as it is in use!", is_error=True)
+            return
+        self.delete_voice_name = item
+        self.show_text_dialog(
+            title=f"Delete model: {item} ?",
+            text=f"This action cannot be undone!",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    theme_text_color="Custom",
+                    text_color=self.theme_cls.primary_color,
+                    on_release=self.txt_dialog_closer
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    theme_text_color="Custom",
+                    text_color="red",
+                    on_release=self.delete_voice_action
+                ),
+            ],
+        )
+
+    def delete_voices(self):
+        caller = self.root.ids.settings_scroll.ids.settings_list
+        delete_list = []
+        for filename in os.listdir(self.model_path):
+            if filename.endswith(".onnx"):
+                voice = filename.replace(".onnx", "")
+                delete_list.append(voice)
+        delete_list.sort()
+        menu_items = [
+            {
+                "text": voice,
+                #"leading_icon": "speaker-message",
+                "on_release": lambda x=voice: self.delete_menu_callback(x),
+                "font_size": sp(24)
+            } for voice in delete_list
+        ]
+        self.delete_menu = MDDropdownMenu(
+            items=menu_items,
+            caller=caller,
+        )
+        self.delete_menu.open()
 
     def show_delete_alert(self):
         wav_count = 0
@@ -544,7 +845,6 @@ class DlTtsSttApp(MDApp):
         )
 
     def delete_tts_action(self, instance):
-        # Custom function called when DISCARD is clicked
         for filename in os.listdir(self.tts_audio_dir):
             if filename.endswith(".wav"):
                 file_path = os.path.join(self.tts_audio_dir, filename)
@@ -555,6 +855,9 @@ class DlTtsSttApp(MDApp):
                     print(f"Could not delete the audion files, error: {e}")
         self.show_toast_msg("Executed the audio cleanup!")
         self.txt_dialog_closer(instance)
+        self.chat_history_id.clear_widgets()
+        self.root.ids.nav_tts.badge_icon = "numeric-0"
+        self.message_counter = 1000 # reset the initial id
 
     def open_link(self, instance, url):
         import webbrowser
@@ -586,4 +889,4 @@ class DlTtsSttApp(MDApp):
         )
 
 if __name__ == '__main__':
-    DlTtsSttApp().run()
+    DlTTSApp().run()

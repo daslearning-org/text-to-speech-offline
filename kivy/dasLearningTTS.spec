@@ -1,22 +1,27 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
+# piper paths
+# data_path = "/home/somnath/codes/git/my-org/text-to-speech-offline/kivy/.env/lib/python3.11/site-packages/piper/espeak-ng-data"
+from pathlib import Path
+import piper
+piper_dir = Path(piper.__file__).parent
+espeak_data_dir = piper_dir / "espeak-ng-data"
+
 a = Analysis(
     ['main.py'],
     pathex=['.'],
     binaries=[],
-    datas=collect_data_files('kivy') + # add all paths which are required
-    [
+    datas=[ #collect_data_files('kivy') + # add all paths which are required
         ('data', 'data'),
-        ('models', 'models'),
         ('screens', 'screens'),
-        ('main_layout.kv', '.')
+        ('main_layout.kv', '.'),
+        (str(espeak_data_dir), 'piper/espeak-ng-data')
     ],
     hiddenimports=[
         "kivymd.uix.screen",
         "kivymd.uix.bottomnavigation",
-        "kivy.parser",
-        "screens.tts",
+        "kivymd.icon_definitions",
     ],
     hookspath=[],
     hooksconfig={},
@@ -34,7 +39,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='dlTTS-v0.0.1',
+    name='dlTTS-v0.3.0',
     icon='data/images/favicon.ico',
     debug=False,
     bootloader_ignore_signals=False,

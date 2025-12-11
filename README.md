@@ -13,11 +13,22 @@ To be added...
 ## 🧑‍💻 Quickstart Guide
 
 ### 📱 Download & Run the Android App
-You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/tags) and downlaod the latest version of the android app on your phone.
+You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the android app on your phone.
 
 > If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions. It defaults to `TTS` folder in `Music`.
 
 > If you have a `Samsung` phone (or some other brand's phone) which doesn't have `Google` as default text-to-speech engine. You may change it to google to get more voices. Go to `Settings` > `Accessibility` > `Talkback` > `Settings` > `text-to-speech settings`> `Preferred engine` > then choose `Google` as default engine. If you do not find this path, directly search `text-to-speech settings` in `Settings`.
+
+### 💻 Download & Run the Windows or Linux App
+You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the application on your computer. If you are on `Windows`, download the `dlTTS_x.x.x.exe` file & double click to run it. If you are on `Linux`, download `dlTTS_Linux_XXX` file and run it.
+
+#### Notes:
+- Some Antivirus softwares might give you detection alert for the exe (happens for PyInstaller apps), you need to add an exception in that case.
+- On Linux you may need to change file permission to execute it.
+```bash
+chmod +x dlTTS_Linux_XXX
+./dlTTS_Linux_XXX
+```
 
 ### 🐍 Run with Python
 
@@ -26,9 +37,7 @@ You can check the [Releases](https://github.com/daslearning-org/text-to-speech-o
 git clone https://github.com/daslearning-org/text-to-speech-offline.git
 ```
 
-2. Download the voice files like [onnx](https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx) & [onnx.json](https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json) from [HuggingFace](https://huggingface.co/rhasspy/piper-voices/tree/main) and place those files in [models](./kivy/models/). You can choose your voices, both `onnx` & `onnx.json` will be required.
-
-3. Run the application
+2. Run the application as show below & you can download the voice models from settings of the app.
 ```bash
 cd text-to-speech-offline/kivy/
 pip install -r requirements.txt # virtual environment is recommended
@@ -158,3 +167,8 @@ adb uninstall in.daslearning.ttsstt
 # you may use buildozer deploy run to check the adb
 buildozer android debug deploy run
 ```
+
+## Reference links
+- Piper-TTS [voices-list](https://huggingface.co/rhasspy/piper-voices/blob/main/voices.json)
+- Listen to [voice samples](https://rhasspy.github.io/piper-samples/)
+- Piper-TTS [GitHub](https://github.com/OHF-Voice/piper1-gpl)

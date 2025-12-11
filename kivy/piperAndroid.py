@@ -1,5 +1,6 @@
 from jnius import PythonJavaClass, java_method, autoclass, cast
 from plyer.platforms.android import activity
+#from kivy.clock import Clock
 import os
 import sys
 from threading import Event
@@ -65,25 +66,32 @@ class MyTTSCallback(PythonJavaClass):
 
 # custom class using android native TTS, kept same name as PiperTts
 class PiperTts:
-    def __init__(self, save_dir=save_path, model_name=None):
+    def __init__(self, save_dir=save_path, model_path=model_path):
+        self.save_dir = save_dir
+        self.model_path = model_path
         self._init_event = Event()
         self._init_listener = MyOnInitListener(self._init_event)
         self.tts = TextToSpeech(activity, self._init_listener)
         self._init_event.wait()
-        self.save_dir = save_dir
-        if model_name:
+
+    def set_model(self, model_name):
+        try:
             voices = self.tts.getVoices()
             for voice in voices.toArray():
                 if voice.getName() == model_name:
                     result = self.tts.setVoice(voice)
                     if result == TextToSpeech.SUCCESS:
                         print(f"Voice '{model_name}' set successfully.")
+                        return True
                     else:
                         print(f"Failed to set voice '{model_name}'")
-        else:
+                        return False
+        except Exception as e:
             self.tts.setLanguage(Locale.US)
+            print(f"Failed to set voice '{model_name}' with error: {e}")
+            return True
 
-    def transcribe(self, message: str, filename: str):
+    def transcribe(self, message: str, filename: str, callback=None):
         event = Event()
         callback = MyTTSCallback(event)
         pyListener = PyTTSListener()
@@ -91,7 +99,7 @@ class PiperTts:
         self.tts.setOnUtteranceProgressListener(pyListener)
         full_save_path = os.path.join(self.save_dir, f"{filename}.wav")
         file_obj = File(full_save_path) # java file object where the wav will be saved
-
+        status = False
         try:
             # Convert Python str to Java String (implements CharSequence)
             java_msg = JavaString(message)
@@ -102,13 +110,14 @@ class PiperTts:
             # Synthesize to file
             result = self.tts.synthesizeToFile(java_msg, bundle, file_obj, java_utteranceId)
             if result != TextToSpeech.SUCCESS:
-                return "Failed to start TTS synthesis"
+                print("Failed to start TTS synthesis")
+                return status
         except Exception as e:
             print(f"transcribe error: {e}")
-            return f"transcribe error: {e}"
-
+            return status
         event.wait()
-        return f"audio saved at: {full_save_path}" # success & wait is complete
+        status = True
+        return status
 
     def models_list(self):
         all_models = []
@@ -119,5 +128,5 @@ class PiperTts:
                 #print(f"Downloaded voice: {voice.getName()}")
                 print(f"Voice: {voice.getName()}, Country: {voice.getLocale().getCountry()}, Language: {voice.getLocale().getLanguage()}, Requires network: {voice.isNetworkConnectionRequired()}")
         except Exception as e:
-            print(f"An error occurred while reading directory '{model_path}': {e}")
+            print(f"Error while fetching android voices: {e}")
         return all_models

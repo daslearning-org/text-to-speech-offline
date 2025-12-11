@@ -1,8 +1,19 @@
-## Changes on the app
+# Changelog
+
+## App details
+You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without any `extension` is for `Linux`. Download and enjoy the freedom.
+
+## Details of all changes / updates
+
+### v0.3.0
+- Changing the initial voice selection method.
+- Now clearing the main screen after all audio deletion from Settings.
+- Adding desktop app & dekstop voice models can be downloaded from settings.
+- The desktop voices can also be deleted from settings.
 
 ### v0.2.2
 - Fixing the edge cut out issue on android 15
-- Changing permissions for android versions
+- Changing permissions for different android versions
 - Using ndk:28c for 16kb page support & target api version to 35 (android 15)
 - Closing the drop down menu after voice model selection
 
