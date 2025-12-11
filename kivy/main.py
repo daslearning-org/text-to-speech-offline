@@ -737,7 +737,7 @@ class DlTTSApp(MDApp):
             print("Need to trigger the popup menu")
             import json
             piper_voice_list = []
-            with open(self.voices_json, "r") as f:
+            with open(self.voices_json, "r", encoding="utf-8") as f:
                 self.voices_obj = json.load(f)
             for voice in self.voices_obj:
                 model_full_path = os.path.join(self.model_path, f"{voice}.onnx")
