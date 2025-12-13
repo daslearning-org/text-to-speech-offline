@@ -71,21 +71,6 @@ pip install -r req_android.txt
 
 # build the android apk
 buildozer android debug # this may take a good amount of time for the first time & will generate the apk in the bin directory
-
-## build AAB for playstore (may require some rework)
-# generate a key
-export APP_ANDROID_KEYSTORE_PASSWORD="yourpassword"
-export APP_ANDROID_KEY_PASSWORD="yourpassword"
-keytool -genkey -v -keystore your_key.jks -alias your_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass $APP_ANDROID_KEYSTORE_PASSWORD -keypass $APP_ANDROID_KEYSTORE_PASSWORD -dname "CN=SomnathDas, OU=IT, O=DasLearning, L=Kolkata, ST=WB, C=IN" # this is one time activity for the app
-
-# set the below in buildozer.spec
-android.sign = True
-android.keystore = /path/to/your_key.jks
-android.key.alias = your_alias
-android.release_artifact = aab
-
-# then build the aab
-buildozer -v android release
 ```
 
 ### 🖳 Build Computer Application (Windows / Linux / MacOS)
@@ -96,11 +81,11 @@ A `Python` virtual environment is recommended and please follow the same steps f
 pip install pyinstaller
 
 # generate the spec file
-pyinstaller --name "dasLearningTTS" --windowed --onefile main.py # optional as it is already create in the repo
+pyinstaller --name "pyinst-single" --windowed --onefile main.py # optional as it is already create in the repo
 
 # then update the spec file as needed
 # then build your app which will be native to the OS i.e. Linux or Windows or MAC
-pyinstaller dasLearningTTS.spec
+pyinstaller pyinst-single.spec
 ```
 
 #### Build Windows exe from Linux
