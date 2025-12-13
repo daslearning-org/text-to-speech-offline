@@ -97,21 +97,30 @@ pyinstaller pyinst-single.spec
 2. Create self signed certificate. Once `.cer` is generated > double click > Install > Local Machine > Trusted People.
 
 ```powershell
+# New certificate
 $cert = New-SelfSignedCertificate `
   -Type CodeSigning `
-  -Subject "CN=DasLearning" `
-  -CertStoreLocation "Cert:\LocalMachine\My"
+  -Subject "CN=DasLearning, O=DasLearning, C=IN" `
+  -CertStoreLocation "Cert:\LocalMachine\My" `
+  -NotAfter (Get-Date).AddYears(5)
 
+# User a strong password
 $password = ConvertTo-SecureString "StrongPassword123!" -AsPlainText -Force
 
+# Export teh certificate
 Export-PfxCertificate `
   -Cert $cert `
-  -FilePath ".\DasLearning.pfx" `
+  -FilePath ".\dlTTS.pfx" `
   -Password $password
 
+# Local installation certificate
 Export-Certificate `
   -Cert $cert `
-  -FilePath ".\DasLearning.cer"
+  -FilePath ".\dlTTS.cer"
+
+# Optiona: check the pfx cert
+Get-PfxCertificate -FilePath ".\dlTTS.pfx" |
+  Format-List Subject, NotBefore, NotAfter
 ```
 
 3. We will be using [MSIX Packaing Tool](https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-GB&gl=IN) to create the MSIX package. Install it & follow the wizard.
