@@ -74,7 +74,9 @@ buildozer android debug # this may take a good amount of time for the first time
 ```
 
 ### 🖳 Build Computer Application (Windows / Linux / MacOS)
-A `Python` virtual environment is recommended and please follow the same steps from above till the pip module installations (do not require buildozer for desktop apps). It builds a native app depending on the OS type i.e. `.exe` if you are running `PyInstaller` from a Windows machine. Build computer apps from [docker image](https://hub.docker.com/r/cdrx/pyinstaller-windows) for any OS type.
+
+#### Build simple executable (single file)
+A `Python` virtual environment is recommended and please follow the same steps from above till the pip module installations (do not require buildozer for desktop apps). It builds a native app depending on the OS type i.e. `.exe` if you are running `PyInstaller` from a Windows machine. You may use this [docker image](https://hub.docker.com/r/cdrx/pyinstaller-windows) for Windows exe.
 
 ```bash
 # install pyinstaller
@@ -87,6 +89,34 @@ pyinstaller --name "pyinst-single" --windowed --onefile main.py # optional as it
 # then build your app which will be native to the OS i.e. Linux or Windows or MAC
 pyinstaller pyinst-single.spec
 ```
+
+#### Creating `MSIX` installer for Microsoft Store
+
+1. Creating an installer exe using [inno setup](https://jrsoftware.org/isinfo.php) and we are using this [spec file](./kivy/msi-inno.iss)
+
+2. Create self signed certificate. Once `.cer` is generated > double click > Install > Local Machine > Trusted People.
+
+```powershell
+$cert = New-SelfSignedCertificate `
+  -Type CodeSigning `
+  -Subject "CN=DasLearning" `
+  -CertStoreLocation "Cert:\LocalMachine\My"
+
+$password = ConvertTo-SecureString "StrongPassword123!" -AsPlainText -Force
+
+Export-PfxCertificate `
+  -Cert $cert `
+  -FilePath ".\DasLearning.pfx" `
+  -Password $password
+
+Export-Certificate `
+  -Cert $cert `
+  -FilePath ".\DasLearning.cer"
+```
+
+3. We will be using [MSIX Packaing Tool](https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-GB&gl=IN) to create the MSIX package. Install it & follow the wizard.
+
+4. Use `http://timestamp.digicert.com` in the timestamp server. Use your details & Generate the MSIX.
 
 #### Build Windows exe from Linux
 
