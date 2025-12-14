@@ -19,6 +19,7 @@ logs/
 models/
 modelss/
 test_codes/
+dlTTS-Windows/
 
 # C extensions
 *.so

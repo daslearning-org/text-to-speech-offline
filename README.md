@@ -71,37 +71,61 @@ pip install -r req_android.txt
 
 # build the android apk
 buildozer android debug # this may take a good amount of time for the first time & will generate the apk in the bin directory
-
-## build AAB for playstore (may require some rework)
-# generate a key
-export APP_ANDROID_KEYSTORE_PASSWORD="yourpassword"
-export APP_ANDROID_KEY_PASSWORD="yourpassword"
-keytool -genkey -v -keystore your_key.jks -alias your_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass $APP_ANDROID_KEYSTORE_PASSWORD -keypass $APP_ANDROID_KEYSTORE_PASSWORD -dname "CN=SomnathDas, OU=IT, O=DasLearning, L=Kolkata, ST=WB, C=IN" # this is one time activity for the app
-
-# set the below in buildozer.spec
-android.sign = True
-android.keystore = /path/to/your_key.jks
-android.key.alias = your_alias
-android.release_artifact = aab
-
-# then build the aab
-buildozer -v android release
 ```
 
 ### 🖳 Build Computer Application (Windows / Linux / MacOS)
-A `Python` virtual environment is recommended and please follow the same steps from above till the pip module installations (do not require buildozer for desktop apps). It builds a native app depending on the OS type i.e. `.exe` if you are running `PyInstaller` from a Windows machine. Build computer apps from [docker image](https://hub.docker.com/r/cdrx/pyinstaller-windows) for any OS type.
+
+#### Build simple executable (single file)
+A `Python` virtual environment is recommended and please follow the same steps from above till the pip module installations (do not require buildozer for desktop apps). It builds a native app depending on the OS type i.e. `.exe` if you are running `PyInstaller` from a Windows machine. You may use this [docker image](https://hub.docker.com/r/cdrx/pyinstaller-windows) for Windows exe.
 
 ```bash
 # install pyinstaller
 pip install pyinstaller
 
 # generate the spec file
-pyinstaller --name "dasLearningTTS" --windowed --onefile main.py # optional as it is already create in the repo
+pyinstaller --name "pyinst-single" --windowed --onefile main.py # optional as it is already create in the repo
 
 # then update the spec file as needed
 # then build your app which will be native to the OS i.e. Linux or Windows or MAC
-pyinstaller dasLearningTTS.spec
+pyinstaller pyinst-single.spec
 ```
+
+#### Creating `MSIX` installer for Microsoft Store
+
+1. Creating an installer exe using [inno setup](https://jrsoftware.org/isinfo.php) and we are using this [spec file](./kivy/msi-inno.iss)
+
+2. Create self signed certificate. Once `.cer` is generated > double click > Install > Local Machine > Trusted People.
+
+```powershell
+# New certificate
+$cert = New-SelfSignedCertificate `
+  -Type CodeSigning `
+  -Subject "CN=DasLearning, O=DasLearning, C=IN" `
+  -CertStoreLocation "Cert:\LocalMachine\My" `
+  -NotAfter (Get-Date).AddYears(5)
+
+# User a strong password
+$password = ConvertTo-SecureString "StrongPassword123!" -AsPlainText -Force
+
+# Export teh certificate
+Export-PfxCertificate `
+  -Cert $cert `
+  -FilePath ".\dlTTS.pfx" `
+  -Password $password
+
+# Local installation certificate
+Export-Certificate `
+  -Cert $cert `
+  -FilePath ".\dlTTS.cer"
+
+# Optiona: check the pfx cert
+Get-PfxCertificate -FilePath ".\dlTTS.pfx" |
+  Format-List Subject, NotBefore, NotAfter
+```
+
+3. We will be using [MSIX Packaing Tool](https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-GB&gl=IN) to create the MSIX package. Install it & follow the wizard.
+
+4. Use `http://timestamp.digicert.com` in the timestamp server. Use your details & Generate the MSIX.
 
 #### Build Windows exe from Linux
 
