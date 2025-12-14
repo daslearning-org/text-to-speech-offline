@@ -1,4 +1,4 @@
-# DlTTS - Offline Text to Speech
+# DlTTS - Offline Text to Speech - Android
 An offline Text to Speech app which can generate voices on many languages using android native TTS feature. It is really lightweight and simple application which is completely Private and Privacy focused.
 
 🚀 Features
@@ -17,3 +17,16 @@ An offline Text to Speech app which can generate voices on many languages using 
 📌 You can store your audio files in "Downloads" or "Music" or any subfolders under this two folders.
 
 ✉️ For any support or query, please use the "Contact Us" option from the App itself.
+
+---
+
+# Windows
+
+## Justification on MS Store
+
+```
+This application is a traditional Win32 desktop application packaged as MSIX.
+The runFullTrust capability is required to allow the app’s executable to run outside the UWP sandbox.
+It is used to execute the Python-based desktop application, access local files selected by the user, and utilize system audio services for text-to-speech functionality.
+No elevated privileges are used, and the application runs in the context of the current user.
+```
