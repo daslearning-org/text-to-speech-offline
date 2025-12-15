@@ -100,7 +100,7 @@ Builder.load_string('''
         MDDropDownItem:
             md_bg_color: "#bdc6b0"
             #pos_hint: {"center_x": .5, "center_y": .7}
-            on_release: app.menu.open()
+            on_release: app.models_dropdown_selector()
             text: "Choose Model"
             id: model_menu
             font_size: sp(14)

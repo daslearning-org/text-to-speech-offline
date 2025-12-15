@@ -45,7 +45,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -365,8 +365,31 @@ class DlTTSApp(MDApp):
                 self.selected_tts_model = "no-android-voice"
             else:
                 self.selected_tts_model = "download-voice"
+                Clock.schedule_once(lambda dt: self.initial_model_download())
         model_menu.text = self.selected_tts_model
         print("Init success...")
+        #print(f"All menu****: {self.menu.items}")
+
+    def initial_model_download(self):
+        buttons = [
+            MDFlatButton(
+                text="Cancel",
+                theme_text_color="Custom",
+                text_color=self.theme_cls.primary_color,
+                on_release=self.txt_dialog_closer
+            ),
+            MDFlatButton(
+                text="Ok",
+                theme_text_color="Custom",
+                text_color="green",
+                on_release=self.download_voices
+            ),
+        ]
+        self.show_text_dialog(
+            "Download your first voice model",
+            "You need to downlaod a voice model first. You can also download voice model(s) from Settings anytime",
+            buttons
+        )
 
     def models_dropdown_setter(self):
         model_menu = self.root.ids.tts_screen.ids.model_menu
@@ -388,6 +411,15 @@ class DlTTSApp(MDApp):
         if len(tts_models) >= 1 and self.selected_tts_model == "download-voice":
             model_menu.text = "select-model"
         threading.Thread(target=self.sync_piper_voices, args=(False,), daemon=True).start()
+
+    def models_dropdown_selector(self):
+        if platform == "android":
+            self.menu.open()
+        else:
+            if len(self.menu.items) >= 1:
+                self.menu.open()
+            else:
+                Clock.schedule_once(lambda dt: self.initial_model_download())
 
     def kv_player_thread(self):
         # Updates the spinner
@@ -729,6 +761,7 @@ class DlTTSApp(MDApp):
         self.popup_download_model()
 
     def download_voices(self, instance=None):
+        self.txt_dialog_closer(instance)
         if self.is_downloading:
             self.show_toast_msg(f"Please wait for the {self.is_downloading} download to finish!", is_error=True)
             return
