@@ -37,7 +37,7 @@ Builder.load_string('''
         orientation: 'vertical'
 
         AccordionItem:
-            title: "Settings"
+            title: "Settings (Click here)"
             spacing: dp(8)
             canvas.before:
                 Color:
@@ -56,7 +56,7 @@ Builder.load_string('''
                             icon: "broom"
 
         AccordionItem:
-            title: "Help & Support"
+            title: "Help & Support (Click here)"
             spacing: dp(8)
             canvas.before:
                 Color:

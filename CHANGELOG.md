@@ -5,6 +5,11 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 
 ## Details of all changes / updates
 
+### v0.3.1
+- Will now pop-up users to downlaod a voice model for the first time [desktop only]
+- Changed the voice model selcetion pop-up using a dedicated function [tech. change only]
+- Minor update on Settings UI [ui change only]
+
 ### v0.3.0
 - Changing the initial voice selection method.
 - Now clearing the main screen after all audio deletion from Settings.
