@@ -22,6 +22,14 @@ An offline Text to Speech app which can generate voices on many languages using 
 
 # Windows
 
+## Product identifiers
+```yml
+Package/Identity/Name: DasLearning.dlTTS-TexttoSpeechOffline
+Package/Identity/Publisher: CN=4735D933-044C-4EDD-84CB-C9AEA4DFED0E
+Package/Properties/PublisherDisplayName: DasLearning
+App/Display/Name: dlTTS - Text to Speech Offline
+```
+
 ## Justification on MS Store
 
 ```
