@@ -6,15 +6,15 @@
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{970610CE-4C63-4884-B648-8DE774645D6F}
-AppName=dlTTS
-AppVersion=0.3.0
-;AppVerName=dlTTS 0.3.0
+AppName=dlTTS - Text to Speech Offline
+AppVersion=0.3.1
+;AppVerName=dlTTS 0.3.1
 AppPublisher=DasLearning
 AppPublisherURL=https://daslearning.in
 AppSupportURL=https://daslearning.in
 AppUpdatesURL=https://daslearning.in
 DefaultDirName={autopf}\dlTTS
-UninstallDisplayIcon={app}\dlTTS-v0.3.0.exe
+UninstallDisplayIcon=E:\Software\AI\dlTTS-v0.3.1.exe
 ; "ArchitecturesAllowed=x64compatible" specifies that Setup cannot run
 ; on anything but x64 and Windows 11 on Arm.
 ArchitecturesAllowed=x64compatible
@@ -24,7 +24,7 @@ ArchitecturesAllowed=x64compatible
 ; the 64-bit view of the registry.
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Manisha Das\Downloads\dlTTS-License.rtf
+LicenseFile=E:\Software\AI\dlTTS-License.rtf
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 OutputBaseFilename=dlTTS-setup
@@ -38,12 +38,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "E:\Software\AI\dlTTS-v0.3.0.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\Software\AI\dlTTS-v0.3.1.exe"; DestDir: "{app}\dist"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\dlTTS"; Filename: "{app}\dlTTS-v0.3.0.exe"
-Name: "{autodesktop}\dlTTS"; Filename: "{app}\dlTTS-v0.3.0.exe"; Tasks: desktopicon
+Name: "{autoprograms}\dlTTS - Text to Speech Offline"; Filename: "E:\Software\AI\dlTTS-v0.3.1.exe"
+Name: "{autodesktop}\dlTTS - Text to Speech Offline"; Filename: "E:\Software\AI\dlTTS-v0.3.1.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\dlTTS-v0.3.0.exe"; Description: "{cm:LaunchProgram,dlTTS}"; Flags: nowait postinstall skipifsilent
+Filename: "E:\Software\AI\dlTTS-v0.3.1.exe"; Description: "{cm:LaunchProgram,dlTTS}"; Flags: nowait postinstall skipifsilent
