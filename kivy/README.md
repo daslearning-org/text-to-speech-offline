@@ -16,11 +16,30 @@ An offline Text to Speech app which can generate voices on many languages using 
 📝 Please note:
 📌 You can store your audio files in "Downloads" or "Music" or any subfolders under this two folders.
 
-✉️ For any support or query, please use the "Contact Us" option from the App itself.
+✉️ For any support or query, please use the "Contact Developer" option from the App itself.
 
 ---
 
 # Windows
+An offline Text to Speech app which can generate voices on many languages. It is really lightweight and simple application which is completely Private and Privacy focused.
+
+```yml
+short_description: Offline Text to Speech app. Supports many languages. Open source & privacy focused.
+```
+
+🚀 Features
+✅️ Offline Text to Speech.
+✅️ Save the generated Audio files in your desired folder (should have permission).
+✅️ Generate voices on the Go, just by typing it, no Internet is required (Models need to be downloaded before).
+✅️ Light-weight, cross-platform, open-source application.
+✅️ Private & secure - No trackers, no Ads, No data collection, completely Private.
+
+🤔 Why would you prefer our Offline TTS app?
+👉 It is free & no subscription required (open source).
+👉 You can also run this on desktop platforms like Windows & Linux.
+👉 You own your data as we do not collect any data.
+
+✉️ For any support or query, please use the "Contact Developer" option from the App itself.
 
 ## Product identifiers
 ```yml
