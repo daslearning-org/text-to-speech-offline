@@ -20,6 +20,9 @@ You can check the [Releases](https://github.com/daslearning-org/text-to-speech-o
 > If you have a `Samsung` phone (or some other brand's phone) which doesn't have `Google` as default text-to-speech engine. You may change it to google to get more voices. Go to `Settings` > `Accessibility` > `Talkback` > `Settings` > `text-to-speech settings`> `Preferred engine` > then choose `Google` as default engine. If you do not find this path, directly search `text-to-speech settings` in `Settings`.
 
 ### 💻 Download & Run the Windows or Linux App
+Get the app from [Microsoft App Store](https://apps.microsoft.com/detail/9nbx1dwkc4fj?referrer=appbadge&mode=direct&hl=en-GB&gl=IN) <br>
+[![MS-Store](./docs/images/ms_store_light.svg)](https://apps.microsoft.com/detail/9nbx1dwkc4fj?referrer=appbadge&mode=direct&hl=en-GB&gl=IN) <br>
+
 You can check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the application on your computer. If you are on `Windows`, download the `dlTTS_x.x.x.exe` file & double click to run it. If you are on `Linux`, download `dlTTS_Linux_XXX` file and run it.
 
 #### Notes:

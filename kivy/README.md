@@ -10,7 +10,7 @@ An offline Text to Speech app which can generate voices on many languages using 
 
 🤔 Why would you prefer our Offline TTS app?
 👉 It is free & no subscription required (open source).
-👉 You can also run this on desktop platforms like Windows & Linux.
+👉 This app is also available on other platforms like Windows & Linux.
 👉 You own your data as we do not collect any data.
 
 📝 Please note:
@@ -35,8 +35,8 @@ short_description: Offline Text to Speech app. Supports many languages. Open sou
 ✅️ Private & secure - No trackers, no Ads, No data collection, completely Private.
 
 🤔 Why would you prefer our Offline TTS app?
-👉 It is free & no subscription required (open source).
-👉 You can also run this on desktop platforms like Windows & Linux.
+👉 No subscription required (open source).
+👉 This app is also available on other platforms like Android & Linux.
 👉 You own your data as we do not collect any data.
 
 ✉️ For any support or query, please use the "Contact Developer" option from the App itself.
