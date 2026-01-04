@@ -88,6 +88,11 @@ Builder.load_string('''
                         on_release: app.update_checker(self)
                         IconLeftWidget:
                             icon: "github"
+                    OneLineIconListItem:
+                        text: "Try Other Apps"
+                        on_release: app.open_link(self, "https://daslearning.in/apps/")
+                        IconLeftWidget:
+                            icon: "google-play"
 
 ''')
 

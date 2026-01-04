@@ -45,7 +45,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
