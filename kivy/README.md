@@ -57,3 +57,8 @@ The runFullTrust capability is required to allow the app’s executable to run o
 It is used to execute the Python-based desktop application, access local files selected by the user, and utilize system audio services for text-to-speech functionality.
 No elevated privileges are used, and the application runs in the context of the current user.
 ```
+
+## Get the app
+The easiest way for Android users is to scan the below QR or this [PlayStore Link](https://play.google.com/store/apps/details?id=in.daslearning.ttssts) to install directly from Google play-store. You can still download the direct `APK` or Desktop versions from here. <br>
+
+<img width="300" height="373" alt="app-qr" src="https://github.com/daslearning-org/text-to-speech-offline/blob/main/docs/images/play-qr.jpg" />
