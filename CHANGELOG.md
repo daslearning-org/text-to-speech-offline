@@ -5,6 +5,12 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 
 ## Details of all changes / updates
 
+### 0.3.3
+- Increasing API level to Android 16.
+
+### v0.3.2
+- Adding link to our other open-source apps in Settings window.
+
 ### v0.3.1
 - Will now pop-up users to downlaod a voice model for the first time [desktop only]
 - Changed the voice model selcetion pop-up using a dedicated function [tech. change only]
