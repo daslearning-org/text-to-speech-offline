@@ -16,7 +16,7 @@ To be added...
 Get the app from [Google PlayStore](https://play.google.com/store/apps/details?id=in.daslearning.ttssts) <br>
 [![Google-Play](./docs/images/google_play.svg)](https://play.google.com/store/apps/details?id=in.daslearning.ttssts) <br>
 
-You can check also the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest apk.
+You can also check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest apk.
 
 > If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions. It defaults to `TTS` folder in `Music`.
 
