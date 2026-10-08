@@ -16,7 +16,7 @@ To be added...
 Get the app from [Google PlayStore](https://play.google.com/store/apps/details?id=in.daslearning.ttssts) <br>
 [![Google-Play](./docs/images/google_play.svg)](https://play.google.com/store/apps/details?id=in.daslearning.ttssts) <br>
 
-You can also check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest apk.
+You can also check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and download the latest apk.
 
 > If you use the `Download` button from the app, you can save the selected audio (.wav) in one of the mentioned folders: `Downloads`, `Music`, `Podcasts`, `Recordings` or `Ringtones` due android file access restrictions. It defaults to `TTS` folder in `Music`.
 
@@ -26,7 +26,7 @@ You can also check the [Releases](https://github.com/daslearning-org/text-to-spe
 Get the app from [Microsoft App Store](https://apps.microsoft.com/detail/9nbx1dwkc4fj?referrer=appbadge&mode=direct&hl=en-GB&gl=IN) <br>
 [![MS-Store](./docs/images/ms_store_light.svg)](https://apps.microsoft.com/detail/9nbx1dwkc4fj?referrer=appbadge&mode=direct&hl=en-GB&gl=IN) <br>
 
-You can also check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and downlaod the latest version of the application on your computer. If you are on `Windows`, download the `dlTTS_x.x.x.exe` file & double click to run it. If you are on `Linux`, download `dlTTS_Linux_XXX` file and run it.
+You can also check the [Releases](https://github.com/daslearning-org/text-to-speech-offline/releases) and download the latest version of the application on your computer. If you are on `Windows`, download the `dlTTS_x.x.x.exe` file & double click to run it. If you are on `Linux`, download `dlTTS_Linux_XXX` file and run it.
 
 #### Notes:
 - Some Antivirus softwares might give you detection alert for the exe (happens for PyInstaller apps), you need to add an exception in that case.

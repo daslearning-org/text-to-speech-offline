@@ -5,6 +5,9 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 
 ## Details of all changes / updates
 
+### 0.3.4
+- Fixing typos
+
 ### 0.3.3
 - Increasing API level to Android 16.
 
@@ -12,7 +15,7 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 - Adding link to our other open-source apps in Settings window.
 
 ### v0.3.1
-- Will now pop-up users to downlaod a voice model for the first time [desktop only]
+- Will now pop-up users to download a voice model for the first time [desktop only]
 - Changed the voice model selcetion pop-up using a dedicated function [tech. change only]
 - Minor update on Settings UI [ui change only]
 
@@ -44,7 +47,7 @@ You will find `.apk` file for `Android`, `.exe` for `Windows` & the file without
 - Fixes the back button not exiting from app main screen.
 
 ### v0.1.6
-- Added in-app file-explorer to downlaod the audio file(s). Due to android permission restrictions, the file can only be saved into `Music` folder in phone storage. Just select the `Music` folder & click on the `Check` button at the bottom-right.
+- Added in-app file-explorer to download the audio file(s). Due to android permission restrictions, the file can only be saved into `Music` folder in phone storage. Just select the `Music` folder & click on the `Check` button at the bottom-right.
 
 ### v0.1.4
 - Adding keyboard suggestion feature for text input
