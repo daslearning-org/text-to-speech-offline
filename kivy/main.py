@@ -45,7 +45,7 @@ else:
     from piperApi import PiperTts
 
 ## Global definitions
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 # Determine the base path for your application's resources
 if getattr(sys, 'frozen', False):
     # Running as a PyInstaller bundle
@@ -387,7 +387,7 @@ class DlTTSApp(MDApp):
         ]
         self.show_text_dialog(
             "Download your first voice model",
-            "You need to downlaod a voice model first. You can also download voice model(s) from Settings anytime",
+            "You need to download a voice model first. You can also download voice model(s) from Settings anytime",
             buttons
         )
 
@@ -522,14 +522,14 @@ class DlTTSApp(MDApp):
 
     def start_download(self, instance):
         parent_id = instance.parent.id
-        file_to_downlaod = f"{parent_id}.wav"
-        wav_file_path = os.path.join(save_path, file_to_downlaod)
+        file_to_download = f"{parent_id}.wav"
+        wav_file_path = os.path.join(save_path, file_to_download)
 
         if not os.path.exists(wav_file_path):
-            self.show_toast_msg(f"The file {file_to_downlaod} is not found!", is_error=True)
+            self.show_toast_msg(f"The file {file_to_download} is not found!", is_error=True)
             return
 
-        self.tts_save_filename = file_to_downlaod
+        self.tts_save_filename = file_to_download
         if platform == "android":
             try:
                 Environment = autoclass("android.os.Environment")
@@ -741,7 +741,7 @@ class DlTTSApp(MDApp):
             ),
         ]
         self.show_text_dialog(
-            "Downlaod the model file",
+            "Download the model file",
             self.model_file_size,
             buttons
         )

@@ -26,7 +26,7 @@ Builder.load_string('''
         icon: "delete"
 
 <DemoPiperLink>:
-    text: "Check the demo voices"
+    text: "Check the desktop voices"
     on_release: app.open_link(self, "https://rhasspy.github.io/piper-samples/")
     IconLeftWidget:
         icon: "music"
